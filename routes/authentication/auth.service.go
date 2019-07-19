@@ -38,13 +38,16 @@ func RegisterAuthService(route *gin.RouterGroup) {
 		if err := c.ShouldBindBodyWith(&payload, binding.JSON); err == nil {
 			if _, err := db.FindByKey("username", payload.Username); err != nil {
 				if _, err := db.FindByKey("email", payload.Email); err != nil {
-					fmt.Println(payload)
 					var person models.User
 					person.Username = payload.Username
 					person.Password = payload.Password
 					person.Email = payload.Email
-					db.Insert(person)
-					utils.SendResponse(c, http.StatusCreated, &models.ResponsePayload{Success: true, Message: "Account created."})
+					person.AuthMethod = models.LOCAL
+					if err := db.Insert(person); err != nil {
+						utils.SendResponse(c, http.StatusServiceUnavailable, &models.ResponsePayload{Success: false, Message: "Database unavailable."})
+					} else {
+						utils.SendResponse(c, http.StatusCreated, &models.ResponsePayload{Success: true, Message: "Account created."})
+					}
 				} else {
 					utils.SendResponse(c, http.StatusConflict, &models.ResponsePayload{Success: false, Message: "Account already exist."})
 				}

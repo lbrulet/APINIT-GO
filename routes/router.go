@@ -14,8 +14,8 @@ func CORS() gin.HandlerFunc {
 	}
 }
 
-// StartServer return a http server
-func StartServer() *gin.Engine {
+// InitRouter return a http server
+func InitRouter() *gin.Engine {
 	router := gin.New()
 
 	router.Use(CORS(), gin.Logger(), gin.Recovery())
