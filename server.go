@@ -9,7 +9,7 @@ func main() {
 	db := mongodb.Connect()
 	defer db.GetDatabase().Close()
 
-	srv := routes.StartServer()
+	srv := routes.InitRouter()
 
 	srv.Run()
 }
