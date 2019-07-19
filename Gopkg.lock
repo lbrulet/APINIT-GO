@@ -115,6 +115,7 @@
     "github.com/gin-gonic/gin",
     "github.com/gin-gonic/gin/binding",
     "gopkg.in/mgo.v2",
+    "gopkg.in/mgo.v2/bson",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1
