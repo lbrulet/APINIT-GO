@@ -30,8 +30,8 @@ Mind always to use the __"user"__ object into your request
 
 ```json
 {
-		"username": "sankamille",
-		"password": "password123"
+	"username": "sankamille",
+	"password": "password123"
 }
 ```
 
@@ -39,8 +39,8 @@ Mind always to use the __"user"__ object into your request
 
 ```json
 {
-        "username": "sankamille",
-        "email": "luc.brulet@epitech.eu",
-		"password": "password123"
+    "username": "sankamille",
+    "email": "luc.brulet@epitech.eu",
+	"password": "password123"
 }
 ```
