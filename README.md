@@ -24,8 +24,6 @@ sudo docker-compose up --build
 
 ## AUTHENTIFICATION
 
-Mind always to use the __"user"__ object into your request
-
 * __POST__: 127.0.0.1:8080/api/auth/login
 
 ```json
