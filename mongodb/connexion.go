@@ -2,6 +2,8 @@ package mongodb
 
 import (
 	mgo "gopkg.in/mgo.v2"
+
+	"github.com/lbrulet/APINIT-GO/configs"
 )
 
 // DatabaseService is a struct that containt all informations about the database
@@ -19,7 +21,7 @@ var (
 
 // Connect is used to config & connect the api to the database
 func Connect() *DatabaseService {
-	Database.Config("localhost", "ROLLEAT", "users")
+	Database.Config(configs.Config.DatabaseHost, configs.Config.DatabaseName, configs.Config.DatabaseCollection)
 	Database.Connect()
 	return &Database
 }

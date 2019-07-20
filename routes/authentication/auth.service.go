@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 
+	"github.com/lbrulet/APINIT-GO/configs"
 	"github.com/lbrulet/APINIT-GO/middleware"
 	models "github.com/lbrulet/APINIT-GO/models"
 	"github.com/lbrulet/APINIT-GO/mongodb"
@@ -28,10 +29,10 @@ func RegisterAuthService(route *gin.RouterGroup) {
 		if err := c.ShouldBindBodyWith(&payload, binding.JSON); err == nil {
 			if user, err := db.FindByKey("username", payload.Username); err == nil {
 				fmt.Println(user.ID)
-				if token, err := utils.CreateToken(user, time.Now().Add(time.Hour*12).Unix()); err != nil {
+				if token, err := utils.CreateToken(user, time.Now().Add(time.Hour*configs.Config.AccessTokenValidityTime).Unix()); err != nil {
 					utils.SendResponse(c, http.StatusBadRequest, &models.ResponsePayload{Success: false, Message: err.Error()})
 				} else {
-					if refresh, err := utils.CreateToken(user, time.Now().Add(time.Hour*24).Unix()); err != nil {
+					if refresh, err := utils.CreateToken(user, time.Now().Add(time.Hour*configs.Config.RefreshTokenValidityTime).Unix()); err != nil {
 						utils.SendResponse(c, http.StatusBadRequest, &models.ResponsePayload{Success: false, Message: err.Error()})
 					} else {
 						utils.SendLoginResponse(c, http.StatusOK, &models.LoginResponsePayload{Success: true, Message: "You are logged in.", Token: token, RefreshToken: refresh})

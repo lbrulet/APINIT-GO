@@ -30,6 +30,10 @@
   unused-packages = true
 
 [[constraint]]
+  name = "github.com/lbrulet/gonfig"
+  version = "1.0.1"
+  
+[[constraint]]
   branch = "v2"
   name = "gopkg.in/mgo.v2"
 
