@@ -16,7 +16,7 @@ func (m *DatabaseService) Connect() {
 		log.Fatal(err)
 	}
 	m.db = session.DB(m.database)
-	fmt.Printf("Connected to the database\n")
+	fmt.Printf("[MONGODB] Connected to the database - %s | %s | %s\n", m.host, m.database, m.collection)
 }
 
 // Config is a function that is used to config the database

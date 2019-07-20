@@ -15,8 +15,14 @@ func InitConfig() {
 	if pwd, err := os.Getwd(); err != nil {
 		panic(err)
 	} else {
-		if err := gonfig.GetConf(pwd+"/configs/dev/config.json", &Config); err != nil {
-			panic(err)
+		if os.Getenv("ENVIRONMENT") == "LOCAL" {
+			if err := gonfig.GetConf(pwd+"/configs/local/config.json", &Config); err != nil {
+				panic(err)
+			}
+		} else {
+			if err := gonfig.GetConf(pwd+"/configs/dev/config.json", &Config); err != nil {
+				panic(err)
+			}
 		}
 	}
 }
