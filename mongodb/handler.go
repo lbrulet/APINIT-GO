@@ -45,7 +45,7 @@ func (m *DatabaseService) FindAll() ([]models.User, error) {
 // FindByID return a specific user fund by his ID
 func (m *DatabaseService) FindByID(id string) (models.User, error) {
 	var user models.User
-	err := m.getCollection().Find(bson.M{"_id": id}).One(&user)
+	err := m.getCollection().Find(bson.M{"_id": bson.ObjectIdHex(id)}).One(&user)
 	return user, err
 }
 
@@ -55,7 +55,7 @@ func (m *DatabaseService) FindOrCreate(id string, username string, service strin
 	return nil
 }
 
-// FindOrCreateAdmin create a new admin user if he does not exist
+// FindOrCreate create a new admin user if he does not exist
 func (m *DatabaseService) FindOrCreateAdmin(username string, password string) error {
 	return nil
 }

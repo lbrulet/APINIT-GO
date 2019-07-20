@@ -3,10 +3,12 @@ package authentication
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 
+	"github.com/lbrulet/APINIT-GO/middleware"
 	models "github.com/lbrulet/APINIT-GO/models"
 	"github.com/lbrulet/APINIT-GO/mongodb"
 	"github.com/lbrulet/APINIT-GO/utils"
@@ -16,14 +18,25 @@ import (
 func RegisterAuthService(route *gin.RouterGroup) {
 	route.Use()
 
+	route.GET("/secret", middleware.IsAuthorized, func(c *gin.Context) {
+		c.JSON(200, &models.ResponsePayload{Success: true, Message: c.MustGet("id").(string)})
+	})
+
 	route.POST("/login", func(c *gin.Context) {
 		payload := models.LoginPayload{}
 		db := mongodb.Database
 		if err := c.ShouldBindBodyWith(&payload, binding.JSON); err == nil {
-			user, _ := db.FindByKey("username", payload.Username)
-			fmt.Println(user)
-			if _, err := db.FindByKey("username", payload.Username); err == nil {
-				utils.SendResponse(c, http.StatusOK, &models.ResponsePayload{Success: true, Message: "You have logged in."})
+			if user, err := db.FindByKey("username", payload.Username); err == nil {
+				fmt.Println(user.ID)
+				if token, err := utils.CreateToken(user, time.Now().Add(time.Hour*12).Unix()); err != nil {
+					utils.SendResponse(c, http.StatusBadRequest, &models.ResponsePayload{Success: false, Message: err.Error()})
+				} else {
+					if refresh, err := utils.CreateToken(user, time.Now().Add(time.Hour*24).Unix()); err != nil {
+						utils.SendResponse(c, http.StatusBadRequest, &models.ResponsePayload{Success: false, Message: err.Error()})
+					} else {
+						utils.SendLoginResponse(c, http.StatusOK, &models.LoginResponsePayload{Success: true, Message: "You are logged in.", Token: token, RefreshToken: refresh})
+					}
+				}
 			} else {
 				utils.SendResponse(c, http.StatusNotFound, &models.ResponsePayload{Success: false, Message: "Account does not exist."})
 			}
