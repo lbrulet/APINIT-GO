@@ -1,6 +1,8 @@
 package mongodb
 
 import (
+	"fmt"
+
 	mgo "gopkg.in/mgo.v2"
 
 	"github.com/lbrulet/APINIT-GO/configs"
@@ -21,6 +23,7 @@ var (
 
 // Connect is used to config & connect the api to the database
 func Connect() *DatabaseService {
+	fmt.Println(configs.Config)
 	Database.Config(configs.Config.DatabaseHost, configs.Config.DatabaseName, configs.Config.DatabaseCollection)
 	Database.Connect()
 	return &Database

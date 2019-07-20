@@ -2,7 +2,7 @@
     "app_port": ":8080",
     "database_host": "localhost:27017",
     "database_collection": "users",
-    "database_name": "ROLLEAT",
+    "database_name": "APINIT",
     "access_token_validity_time": 12,
     "refresh_token_validity_time": 24
   }

@@ -1,10 +1,10 @@
 package configs
 
 import (
-	"gonfig"
 	"os"
 
 	"github.com/lbrulet/APINIT-GO/models"
+	"github.com/lbrulet/gonfig"
 )
 
 // Config is a global variable to get informations from the Configuration structure

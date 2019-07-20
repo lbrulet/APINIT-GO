@@ -1,0 +1,18 @@
+version: '3.3'
+services:
+  apinit:
+    container_name: 'apinit'
+    environment:
+      - LOCAL=DEV
+    build: './'
+    ports:
+      - '8080:8080'
+    volumes:
+      - './apinit:/go/src/app'
+    depends_on:
+      - 'mongodb' 
+  mongodb:
+    image: 'mongo:latest'
+    container_name: 'mongodb'
+    ports:
+      - '27100:27017'
