@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+	"gopkg.in/mgo.v2/bson"
 
 	"github.com/lbrulet/APINIT-GO/configs"
 	"github.com/lbrulet/APINIT-GO/middleware"
@@ -21,6 +22,25 @@ func RegisterAuthService(route *gin.RouterGroup) {
 
 	route.GET("/secret", middleware.IsAuthorized, func(c *gin.Context) {
 		c.JSON(200, &models.ResponsePayload{Success: true, Message: c.MustGet("id").(string)})
+	})
+
+	route.GET("/confirm-account", func(c *gin.Context) {
+		token := c.Query("token")
+		db := mongodb.Database
+		if claims, err := utils.ExtractClaims(token); err != nil {
+			c.Redirect(http.StatusMovedPermanently, configs.Config.MailFailedRedirect)
+		} else {
+			if user, err := db.FindByID(claims.ID); err != nil {
+				c.Redirect(http.StatusMovedPermanently, configs.Config.MailFailedRedirect)
+			} else {
+				user.Verified = true
+				if err := db.Update(user); err != nil {
+					c.Redirect(http.StatusMovedPermanently, configs.Config.MailFailedRedirect)
+				} else {
+					c.Redirect(http.StatusMovedPermanently, configs.Config.MailSuccessRedirect)
+				}
+			}
+		}
 	})
 
 	route.POST("/login", func(c *gin.Context) {
@@ -53,6 +73,7 @@ func RegisterAuthService(route *gin.RouterGroup) {
 			if _, err := db.FindByKey("username", payload.Username); err != nil {
 				if _, err := db.FindByKey("email", payload.Email); err != nil {
 					var person models.User
+					person.ID = bson.NewObjectId()
 					person.Username = payload.Username
 					person.Password = payload.Password
 					person.Email = payload.Email
@@ -60,6 +81,11 @@ func RegisterAuthService(route *gin.RouterGroup) {
 					if err := db.Insert(person); err != nil {
 						utils.SendResponse(c, http.StatusServiceUnavailable, &models.ResponsePayload{Success: false, Message: "Database unavailable."})
 					} else {
+						if token, err := utils.CreateToken(person, time.Now().Add(time.Hour*configs.Config.AccessTokenValidityTime).Unix()); err != nil {
+							utils.SendResponse(c, http.StatusBadRequest, &models.ResponsePayload{Success: false, Message: err.Error()})
+						} else {
+							utils.SendMail(person, token)
+						}
 						utils.SendResponse(c, http.StatusCreated, &models.ResponsePayload{Success: true, Message: "Account created."})
 					}
 				} else {

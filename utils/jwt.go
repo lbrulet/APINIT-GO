@@ -3,7 +3,6 @@ package utils
 import (
 	"errors"
 
-	"github.com/gin-gonic/gin"
 	"github.com/lbrulet/APINIT-GO/models"
 
 	jwt "github.com/dgrijalva/jwt-go"
@@ -25,24 +24,20 @@ func CreateToken(user models.User, ExpiresAt int64) (string, error) {
 }
 
 // ExtractClaims from the header and return it
-func ExtractClaims(c *gin.Context) (*models.Claims, error) {
-	if c.Request.Header["Authorization"] != nil {
-		token := c.Request.Header["Authorization"][0][7:len(c.Request.Header["Authorization"][0])]
-		claims := &models.Claims{}
+func ExtractClaims(token string) (*models.Claims, error) {
+	claims := &models.Claims{}
 
-		tk, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
-			return []byte("pingouin123"), nil
-		})
-		if err != nil {
-			if err == jwt.ErrSignatureInvalid {
-				return nil, errors.New("Not Authorized")
-			}
-			return nil, err
-		}
-		if !tk.Valid {
+	tk, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
+		return []byte("pingouin123"), nil
+	})
+	if err != nil {
+		if err == jwt.ErrSignatureInvalid {
 			return nil, errors.New("Not Authorized")
 		}
-		return claims, nil
+		return nil, err
 	}
-	return nil, errors.New("Authorization is missing")
+	if !tk.Valid {
+		return nil, errors.New("Not Authorized")
+	}
+	return claims, nil
 }

@@ -1,8 +1,14 @@
 {
-    "app_port": ":8080",
-    "database_host": "localhost:27017",
-    "database_collection": "users",
-    "database_name": "APINIT",
-    "access_token_validity_time": 12,
-    "refresh_token_validity_time": 24
-  }
+  "app_port": ":8080",
+  "database_host": "localhost:27017",
+  "database_collection": "users",
+  "database_name": "ROLLEAT",
+  "mail_from": "Rolleat <no-reply@rolleat.com>",
+  "mail_subject": "Confirm account",
+  "mail_smtp": "smtp.gmail.com:587",
+  "mail_confirmation": "http://127.0.0.1:8080/api/auth/confirm-account",
+  "mail_success": "http://google.com/",
+  "mail_failed": "http://google.com/fail",
+  "access_token_validity_time": 12,
+  "refresh_token_validity_time": 24
+}
