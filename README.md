@@ -41,6 +41,6 @@ Mind always to use the __"user"__ object into your request
 {
     "username": "sankamille",
     "email": "luc.brulet@epitech.eu",
-"password": "password123"
+    "password": "password123"
 }
 ```
