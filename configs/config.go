@@ -1,6 +1,7 @@
 package configs
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/lbrulet/APINIT-GO/models"
@@ -25,4 +26,5 @@ func InitConfig() {
 			}
 		}
 	}
+	fmt.Printf("[%s, %s]\n", Config.MailAddress, Config.MailPassword)
 }
