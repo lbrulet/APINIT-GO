@@ -2,6 +2,10 @@
 
 APINIT-GO is a setup of an apiREST using Golang with a mongo database and Docker with an authentification service using JWT.
 
+* __TODO__:
+    - CRUD User
+    - Unit Testing with moq & testify
+
 ## Installation
 
 Use [curl](https://curl.haxx.se/) to install [Docker Compose](https://docs.docker.com/compose/install/#install-compose).
