@@ -50,7 +50,7 @@ func RegisterAuthService(route *gin.RouterGroup) {
 		if err := c.ShouldBindBodyWith(&payload, binding.JSON); err == nil {
 			if user, err := db.FindByKey("email", payload.Email); err == nil {
 				if res, err := password.Generate(7, 2, 2, false, false); err != nil {
-					utils.SendResponse(c, http.StatusBadRequest, &models.ResponsePayload{Success: false, Message: err.Error()})
+					c.Redirect(http.StatusMovedPermanently, configs.Config.MailSuccessRedirect)
 				} else {
 					if pwd, err := os.Getwd(); err != nil {
 						panic(err)
@@ -61,13 +61,13 @@ func RegisterAuthService(route *gin.RouterGroup) {
 							Password: res,
 						}, pwd+"/templates/recovery.html")
 					}
-					utils.SendResponse(c, http.StatusOK, &models.ResponsePayload{Success: true, Message: "New password generated."})
+					c.Redirect(http.StatusMovedPermanently, configs.Config.MailSuccessRedirect)
 				}
 			} else {
-				utils.SendResponse(c, http.StatusBadRequest, &models.ResponsePayload{Success: false, Message: "User not found."})
+				c.Redirect(http.StatusMovedPermanently, configs.Config.MailFailedRedirect)
 			}
 		} else {
-			utils.SendResponse(c, http.StatusBadRequest, &models.ResponsePayload{Success: false, Message: "Bad request."})
+			c.Redirect(http.StatusMovedPermanently, configs.Config.MailFailedRedirect)
 		}
 	})
 
