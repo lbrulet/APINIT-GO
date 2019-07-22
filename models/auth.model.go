@@ -12,3 +12,8 @@ type RegisterPayload struct {
 	Email    string `json:"email" binding:"required"`
 	Password string `json:"password" binding:"required"`
 }
+
+// RecoveryPayload is the recovery model
+type RecoveryPayload struct {
+	Email string `json:"email" binding:"required"`
+}
