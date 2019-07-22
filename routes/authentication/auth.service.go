@@ -1,12 +1,13 @@
 package authentication
 
 import (
-	"fmt"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+	"github.com/sethvargo/go-password/password"
 	"gopkg.in/mgo.v2/bson"
 
 	"github.com/lbrulet/APINIT-GO/configs"
@@ -43,20 +44,50 @@ func RegisterAuthService(route *gin.RouterGroup) {
 		}
 	})
 
+	route.POST("/recovery", func(c *gin.Context) {
+		payload := models.RecoveryPayload{}
+		db := mongodb.Database
+		if err := c.ShouldBindBodyWith(&payload, binding.JSON); err == nil {
+			if user, err := db.FindByKey("email", payload.Email); err == nil {
+				if res, err := password.Generate(7, 2, 2, false, false); err != nil {
+					utils.SendResponse(c, http.StatusBadRequest, &models.ResponsePayload{Success: false, Message: err.Error()})
+				} else {
+					if pwd, err := os.Getwd(); err != nil {
+						panic(err)
+					} else {
+						utils.SendMail(user, models.TemplateRecovery{
+							Email:    user.Email,
+							Username: user.Username,
+							Password: res,
+						}, pwd+"/templates/recovery.html")
+					}
+					utils.SendResponse(c, http.StatusOK, &models.ResponsePayload{Success: true, Message: "New password generated."})
+				}
+			} else {
+				utils.SendResponse(c, http.StatusBadRequest, &models.ResponsePayload{Success: false, Message: "User not found."})
+			}
+		} else {
+			utils.SendResponse(c, http.StatusBadRequest, &models.ResponsePayload{Success: false, Message: "Bad request."})
+		}
+	})
+
 	route.POST("/login", func(c *gin.Context) {
 		payload := models.LoginPayload{}
 		db := mongodb.Database
 		if err := c.ShouldBindBodyWith(&payload, binding.JSON); err == nil {
 			if user, err := db.FindByKey("username", payload.Username); err == nil {
-				fmt.Println(user.ID)
-				if token, err := utils.CreateToken(user, time.Now().Add(time.Hour*configs.Config.AccessTokenValidityTime).Unix()); err != nil {
-					utils.SendResponse(c, http.StatusBadRequest, &models.ResponsePayload{Success: false, Message: err.Error()})
-				} else {
-					if refresh, err := utils.CreateToken(user, time.Now().Add(time.Hour*configs.Config.RefreshTokenValidityTime).Unix()); err != nil {
+				if user.Verified == true {
+					if token, err := utils.CreateToken(user, time.Now().Add(time.Hour*configs.Config.AccessTokenValidityTime).Unix()); err != nil {
 						utils.SendResponse(c, http.StatusBadRequest, &models.ResponsePayload{Success: false, Message: err.Error()})
 					} else {
-						utils.SendLoginResponse(c, http.StatusOK, &models.LoginResponsePayload{Success: true, Message: "You are logged in.", Token: token, RefreshToken: refresh})
+						if refresh, err := utils.CreateToken(user, time.Now().Add(time.Hour*configs.Config.RefreshTokenValidityTime).Unix()); err != nil {
+							utils.SendResponse(c, http.StatusBadRequest, &models.ResponsePayload{Success: false, Message: err.Error()})
+						} else {
+							utils.SendLoginResponse(c, http.StatusOK, &models.LoginResponsePayload{Success: true, Message: "You are logged in.", Token: token, RefreshToken: refresh})
+						}
 					}
+				} else {
+					utils.SendResponse(c, http.StatusNotFound, &models.ResponsePayload{Success: false, Message: "Account is not verified."})
 				}
 			} else {
 				utils.SendResponse(c, http.StatusNotFound, &models.ResponsePayload{Success: false, Message: "Account does not exist."})
@@ -84,7 +115,15 @@ func RegisterAuthService(route *gin.RouterGroup) {
 						if token, err := utils.CreateToken(person, time.Now().Add(time.Hour*configs.Config.AccessTokenValidityTime).Unix()); err != nil {
 							utils.SendResponse(c, http.StatusBadRequest, &models.ResponsePayload{Success: false, Message: err.Error()})
 						} else {
-							utils.SendMail(person, token)
+							if pwd, err := os.Getwd(); err != nil {
+								panic(err)
+							} else {
+								utils.SendMail(person, models.Template{
+									Email:        person.Email,
+									Username:     person.Username,
+									ConfirmEmail: configs.Config.MailConfirmationLink + "?token=" + token,
+								}, pwd+"/templates/welcome.html")
+							}
 						}
 						utils.SendResponse(c, http.StatusCreated, &models.ResponsePayload{Success: true, Message: "Account created."})
 					}
