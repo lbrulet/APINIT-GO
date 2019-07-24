@@ -1,6 +1,7 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/lbrulet/APINIT-GO)](https://goreportcard.com/report/github.com/lbrulet/APINIT-GO)
-[![Known Vulnerabilities](https://snyk.io//test/github/lbrulet/APINIT-GO/badge.svg?targetFile=Gopkg.lock)](https://snyk.io//test/github/lbrulet/APINIT-GO?targetFile=Gopkg.lock)
+    <a href="https://snyk.io//test/github/lbrulet/APINIT-GO?targetFile=Gopkg.lock"><img src="https://snyk.io//test/github/lbrulet/APINIT-GO/badge.svg?targetFile=Gopkg.lock" alt="Known Vulnerabilities" data-canonical-src="https://snyk.io//test/github/lbrulet/APINIT-GO?targetFile=Gopkg.lock" style="max-width:100%;"></a>
 
+  
   
     
 
