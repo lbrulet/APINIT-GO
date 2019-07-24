@@ -49,14 +49,25 @@ func (m *DatabaseService) FindByID(id string) (models.User, error) {
 	return user, err
 }
 
-// FindOrCreate create a new user if he does not exist
-func (m *DatabaseService) FindOrCreate(id string, username string, service string) error {
-	m.getCollection().Insert()
-	return nil
-}
-
 // FindOrCreate create a new admin user if he does not exist
-func (m *DatabaseService) FindOrCreateAdmin(username string, password string) error {
+func (m *DatabaseService) FindOrCreate(username string, password string, email string, isAdmin bool) error {
+	var user models.User
+	err := m.getCollection().Find(bson.M{"username": username}).One(&user)
+	if err != nil {
+		user.ID = bson.NewObjectId()
+		user.Username = username
+		user.Password = password
+		user.Email = email
+		user.AuthMethod = models.LOCAL
+		user.Verified = true
+		if isAdmin {
+			user.Admin = true
+		} else {
+			user.Admin = false
+		}
+		err := m.getCollection().Insert(&user)
+		return err
+	}
 	return nil
 }
 

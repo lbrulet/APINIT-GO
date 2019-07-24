@@ -26,5 +26,6 @@ func Connect() *DatabaseService {
 	fmt.Println(configs.Config)
 	Database.Config(configs.Config.DatabaseHost, configs.Config.DatabaseName, configs.Config.DatabaseCollection)
 	Database.Connect()
+	Database.FindOrCreate("admin", "admin123", "admin@apinit-go.eu", true)
 	return &Database
 }
