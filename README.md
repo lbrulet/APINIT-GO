@@ -26,6 +26,16 @@ To start the container
 sudo docker-compose up --build
 ```
 
+## MAIL SENDER
+
+Don't forget to write your smtp detail into the /configs/local/config.json or /configs/dev/config.json
+And please export your mail account with password like below :
+
+```bash
+export MAIL_ADDRESS=luc.brulet@epitech.eu
+export MAIL_PASSWORD=azertyuiop
+```
+
 ## AUTHENTIFICATION
 
 * __POST__: 127.0.0.1:8080/api/auth/login
