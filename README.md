@@ -1,3 +1,5 @@
+[![Go Report Card](https://goreportcard.com/badge/github.com/lbrulet/APINIT-GO)](https://goreportcard.com/report/github.com/lbrulet/APINIT-GO)
+
 # APINIT-GO
 
 APINIT-GO is a setup of an apiREST using Golang with a mongo database and Docker with an authentification service using JWT.
