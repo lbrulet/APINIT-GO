@@ -25,7 +25,6 @@ func RegisterUsersService(route *gin.RouterGroup) {
 	route.GET("/:id", middleware.IsAuthorized, func(c *gin.Context) {
 		id := c.Param("id")
 		db := mongodb.Database
-
 		if id == "me" {
 			id = c.MustGet("id").(string)
 		} else {
