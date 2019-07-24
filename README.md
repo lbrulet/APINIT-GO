@@ -1,5 +1,8 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/lbrulet/APINIT-GO)](https://goreportcard.com/report/github.com/lbrulet/APINIT-GO)
+    
+[![Known Vulnerabilities](https://snyk.io//test/github/lbrulet/APINIT-GO/badge.svg?targetFile=Gopkg.lock)](https://snyk.io//test/github/lbrulet/APINIT-GO?targetFile=Gopkg.lock)
 
+  
 # APINIT-GO
 
 APINIT-GO is a setup of an apiREST using Golang with a mongo database and Docker with an authentification service using JWT.
