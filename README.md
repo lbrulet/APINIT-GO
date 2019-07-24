@@ -1,5 +1,4 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/lbrulet/APINIT-GO)](https://goreportcard.com/report/github.com/lbrulet/APINIT-GO)
-
   
 # APINIT-GO
 
