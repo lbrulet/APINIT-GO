@@ -3,6 +3,7 @@ package routes
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/lbrulet/APINIT-GO/routes/authentication"
+	"github.com/lbrulet/APINIT-GO/routes/users"
 )
 
 // CORS allow request from outside
@@ -25,6 +26,10 @@ func InitRouter() *gin.Engine {
 	auth := api.Group("/auth")
 
 	authentication.RegisterAuthService(auth)
+
+	user := api.Group("/users")
+
+	users.RegisterUsersService(user)
 
 	return router
 }

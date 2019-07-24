@@ -1,6 +1,7 @@
 package mongodb
 
 import (
+	"errors"
 	"fmt"
 	"log"
 
@@ -45,6 +46,9 @@ func (m *DatabaseService) FindAll() ([]models.User, error) {
 // FindByID return a specific user fund by his ID
 func (m *DatabaseService) FindByID(id string) (models.User, error) {
 	var user models.User
+	if valid := bson.IsObjectIdHex(id); valid == false {
+		return models.User{}, errors.New("Invalid id")
+	}
 	err := m.getCollection().Find(bson.M{"_id": bson.ObjectIdHex(id)}).One(&user)
 	return user, err
 }
