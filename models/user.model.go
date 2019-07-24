@@ -1,6 +1,8 @@
 package models
 
-import "gopkg.in/mgo.v2/bson"
+import (
+	"gopkg.in/mgo.v2/bson"
+)
 
 // AuthMethod is a authentication mark
 type AuthMethod int

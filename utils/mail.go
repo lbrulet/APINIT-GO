@@ -7,6 +7,7 @@ import (
 	"net/smtp"
 
 	"github.com/jordan-wright/email"
+
 	"github.com/lbrulet/APINIT-GO/configs"
 	"github.com/lbrulet/APINIT-GO/models"
 )
