@@ -47,6 +47,8 @@ export MAIL_ADDRESS=luc.brulet@epitech.eu
 export MAIL_PASSWORD=azertyuiop
 ```
 
+NOTE: The default config is the google's smtp address
+
 ## AUTHENTIFICATION
 
 * __POST__: 127.0.0.1:8080/api/auth/login
