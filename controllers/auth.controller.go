@@ -23,7 +23,7 @@ import (
 // @Param   Login payload      body models.LoginPayload true  "Here an exemple of the body"
 // @Success 200 {object} models.LoginResponsePayload "You are logged in."
 // @Failure 400 {object} models.ResponsePayload "Bad request."
-// @Failure 404 {object} models.ResponsePayload "Account does not exist."
+// @Failure 404 {object} models.ResponsePayload "Username or password invalid."
 // @Failure 409 {object} models.ResponsePayload "Account is not verified."
 // @Router /auth/login [post]
 // LoginController is a function that handle the login route
@@ -32,6 +32,10 @@ func LoginController(c *gin.Context) {
 	db := mongodb.Database
 	if err := c.ShouldBindBodyWith(&payload, binding.JSON); err == nil {
 		if user, err := db.FindByKey("username", payload.Username); err == nil {
+			if user.Password != payload.Password {
+				utils.SendResponse(c, http.StatusNotFound, &models.ResponsePayload{Success: false, Message: "Username or password invalid."})
+				return
+			}
 			if user.Verified == true {
 				if token, err := utils.CreateToken(user, time.Now().Add(time.Hour*configs.Config.AccessTokenValidityTime).Unix()); err != nil {
 					utils.SendResponse(c, http.StatusBadRequest, &models.ResponsePayload{Success: false, Message: "Bad request."})
@@ -46,7 +50,7 @@ func LoginController(c *gin.Context) {
 				utils.SendResponse(c, http.StatusConflict, &models.ResponsePayload{Success: false, Message: "Account is not verified."})
 			}
 		} else {
-			utils.SendResponse(c, http.StatusNotFound, &models.ResponsePayload{Success: false, Message: "Account does not exist."})
+			utils.SendResponse(c, http.StatusNotFound, &models.ResponsePayload{Success: false, Message: "Username or password invalid."})
 		}
 	} else {
 		utils.SendResponse(c, http.StatusBadRequest, &models.ResponsePayload{Success: false, Message: "Bad request."})
