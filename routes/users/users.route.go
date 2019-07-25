@@ -39,4 +39,22 @@ func RegisterUsersService(route *gin.RouterGroup) {
 			utils.SendResponse(c, 200, &models.ResponsePayload{Success: true, Message: user})
 		}
 	})
+
+	route.PUT("/:id", middleware.IsAuthorized, func(c *gin.Context) {
+		id := c.Param("id")
+		db := mongodb.Database
+		if id == "me" {
+			id = c.MustGet("id").(string)
+		} else {
+			if user, err := db.FindByID(c.MustGet("id").(string)); err != nil || user.Admin != true {
+				utils.SendResponse(c, http.StatusBadRequest, &models.ResponsePayload{Success: false, Message: "Not authorized."})
+				return
+			}
+		}
+		if user, err := db.FindByID(id); err != nil {
+			utils.SendResponse(c, http.StatusNotFound, &models.ResponsePayload{Success: false, Message: "User not found."})
+		} else {
+			utils.SendResponse(c, 200, &models.ResponsePayload{Success: true, Message: user})
+		}
+	})
 }

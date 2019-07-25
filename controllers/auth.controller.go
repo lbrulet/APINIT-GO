@@ -74,10 +74,10 @@ func RegisterController(c *gin.Context) {
 					utils.SendResponse(c, http.StatusCreated, &models.ResponsePayload{Success: true, Message: "Account created."})
 				}
 			} else {
-				utils.SendResponse(c, http.StatusConflict, &models.ResponsePayload{Success: false, Message: "Account already exist."})
+				utils.SendResponse(c, http.StatusConflict, &models.ResponsePayload{Success: false, Message: "Email already exist."})
 			}
 		} else {
-			utils.SendResponse(c, http.StatusConflict, &models.ResponsePayload{Success: false, Message: "Account already exist."})
+			utils.SendResponse(c, http.StatusConflict, &models.ResponsePayload{Success: false, Message: "Username already exist."})
 		}
 	} else {
 		utils.SendResponse(c, http.StatusBadRequest, &models.ResponsePayload{Success: false, Message: "Bad request."})
