@@ -28,6 +28,15 @@ To start the container
 sudo docker-compose up --build
 ```
 
+## CHOOSE YOUR ENVIRONNMENT !
+
+Use this export to connect the api to your local mongo.
+```bash
+export ENVIRONMENT=LOCAL
+```
+
+Otherwise you can just used the docker compose.
+
 ## MAIL SENDER
 
 Don't forget to write your smtp detail into the /configs/local/config.json or /configs/dev/config.json
