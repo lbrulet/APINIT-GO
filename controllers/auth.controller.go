@@ -15,6 +15,17 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
+// LoginController godoc
+// @tags auth
+// @Summary Logs user into the system
+// @Accept  json
+// @Produce  json
+// @Param   Login payload      body models.LoginPayload true  "Here an exemple of the body"
+// @Success 200 {object} models.LoginResponsePayload "You are logged in."
+// @Failure 400 {object} models.ResponsePayload "Bad request."
+// @Failure 404 {object} models.ResponsePayload "Account does not exist."
+// @Failure 409 {object} models.ResponsePayload "Account is not verified."
+// @Router /auth/login [post]
 // LoginController is a function that handle the login route
 func LoginController(c *gin.Context) {
 	payload := models.LoginPayload{}
@@ -23,16 +34,16 @@ func LoginController(c *gin.Context) {
 		if user, err := db.FindByKey("username", payload.Username); err == nil {
 			if user.Verified == true {
 				if token, err := utils.CreateToken(user, time.Now().Add(time.Hour*configs.Config.AccessTokenValidityTime).Unix()); err != nil {
-					utils.SendResponse(c, http.StatusBadRequest, &models.ResponsePayload{Success: false, Message: err.Error()})
+					utils.SendResponse(c, http.StatusBadRequest, &models.ResponsePayload{Success: false, Message: "Bad request."})
 				} else {
 					if refresh, err := utils.CreateToken(user, time.Now().Add(time.Hour*configs.Config.RefreshTokenValidityTime).Unix()); err != nil {
-						utils.SendResponse(c, http.StatusBadRequest, &models.ResponsePayload{Success: false, Message: err.Error()})
+						utils.SendResponse(c, http.StatusBadRequest, &models.ResponsePayload{Success: false, Message: "Bad request."})
 					} else {
 						utils.SendLoginResponse(c, http.StatusOK, &models.LoginResponsePayload{Success: true, Message: "You are logged in.", Token: token, RefreshToken: refresh})
 					}
 				}
 			} else {
-				utils.SendResponse(c, http.StatusNotFound, &models.ResponsePayload{Success: false, Message: "Account is not verified."})
+				utils.SendResponse(c, http.StatusConflict, &models.ResponsePayload{Success: false, Message: "Account is not verified."})
 			}
 		} else {
 			utils.SendResponse(c, http.StatusNotFound, &models.ResponsePayload{Success: false, Message: "Account does not exist."})
@@ -42,6 +53,17 @@ func LoginController(c *gin.Context) {
 	}
 }
 
+// RegisterController godoc
+// @tags auth
+// @Summary register a user into the system
+// @Accept  json
+// @Produce  json
+// @Param   Register payload      body models.RegisterPayload true "Here an exemple of the body"
+// @Success 201 {object} models.ResponsePayload "Account created.""
+// @Failure 400 {object} models.ResponsePayload "Bad request.""
+// @Failure 409 {object} models.ResponsePayload "Email already exist. or Username already exist."
+// @Failure 503 {object} models.ResponsePayload "Database unavailable.""
+// @Router /auth/register [post]
 // RegisterController is a function that handle the register route
 func RegisterController(c *gin.Context) {
 	payload := models.RegisterPayload{}
@@ -59,7 +81,7 @@ func RegisterController(c *gin.Context) {
 					utils.SendResponse(c, http.StatusServiceUnavailable, &models.ResponsePayload{Success: false, Message: "Database unavailable."})
 				} else {
 					if token, err := utils.CreateToken(person, time.Now().Add(time.Hour*configs.Config.AccessTokenValidityTime).Unix()); err != nil {
-						utils.SendResponse(c, http.StatusBadRequest, &models.ResponsePayload{Success: false, Message: err.Error()})
+						utils.SendResponse(c, http.StatusBadRequest, &models.ResponsePayload{Success: false, Message: "Bad request."})
 					} else {
 						if pwd, err := os.Getwd(); err != nil {
 							panic(err)
@@ -84,6 +106,14 @@ func RegisterController(c *gin.Context) {
 	}
 }
 
+// RecoveryController godoc
+// @tags auth
+// @Summary password recovery
+// @Accept  json
+// @Produce  json
+// @Param   Recovery payload      body models.RecoveryPayload true "Here an exemple of the body"
+// @Success 301 Redirect Redirect
+// @Router /auth/recovery [post]
 // RecoveryController is a function that handle the recovery password route
 func RecoveryController(c *gin.Context) {
 	payload := models.RecoveryPayload{}
@@ -112,6 +142,15 @@ func RecoveryController(c *gin.Context) {
 	}
 }
 
+// ConfirmAccountController godoc
+// @tags auth
+// @Summary confirm user's email
+// @ID get-string-by-int
+// @Accept  json
+// @Produce  json
+// @Param id path string true "token of the user"
+// @Success 301 Redirect Redirect
+// @Router /auth/confirm-account?token={id} [get]
 // ConfirmAccountController is a function that hundle the confirm account route
 func ConfirmAccountController(c *gin.Context) {
 	token := c.Query("token")

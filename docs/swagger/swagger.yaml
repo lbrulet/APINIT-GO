@@ -1,0 +1,198 @@
+basePath: /api/
+definitions:
+  models.LoginPayload:
+    properties:
+      password:
+        example: password123
+        type: string
+      username:
+        example: sankamille
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  models.LoginResponsePayload:
+    properties:
+      message:
+        type: string
+      refresh-token:
+        type: string
+      success:
+        type: boolean
+      token:
+        type: string
+    required:
+    - message
+    - refresh-token
+    - success
+    - token
+    type: object
+  models.RecoveryPayload:
+    properties:
+      email:
+        type: string
+    required:
+    - email
+    type: object
+  models.RegisterPayload:
+    properties:
+      email:
+        example: luc.brulet@epitech.eu
+        type: string
+      password:
+        example: password123
+        type: string
+      username:
+        example: sankamille
+        type: string
+    required:
+    - email
+    - password
+    - username
+    type: object
+  models.ResponsePayload:
+    properties:
+      message:
+        required:
+        - message
+        type: object
+      success:
+        type: boolean
+    required:
+    - success
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: luc.brulet@epitech.eu
+    name: Luc Brulet
+    url: https://www.linkedin.com/in/luc-brulet/
+  description: This is a sample golang server.
+  license: {}
+  title: APINIT-GO
+  version: "1.0"
+paths:
+  /auth/confirm-account:
+    get:
+      consumes:
+      - application/json
+      operationId: get-string-by-int
+      parameters:
+      - description: token of the user
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "301":
+          description: Moved Permanently
+          schema:
+            type: Redirect
+      summary: confirm user's email
+      tags:
+      - auth
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Here an exemple of the body
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.LoginPayload'
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: You are logged in.
+          schema:
+            $ref: '#/definitions/models.LoginResponsePayload'
+            type: object
+        "400":
+          description: Bad request.
+          schema:
+            $ref: '#/definitions/models.ResponsePayload'
+            type: object
+        "404":
+          description: Account does not exist.
+          schema:
+            $ref: '#/definitions/models.ResponsePayload'
+            type: object
+        "409":
+          description: Account is not verified.
+          schema:
+            $ref: '#/definitions/models.ResponsePayload'
+            type: object
+      summary: Logs user into the system
+      tags:
+      - auth
+  /auth/recovery:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Here an exemple of the body
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.RecoveryPayload'
+          type: object
+      produces:
+      - application/json
+      responses:
+        "301":
+          description: Moved Permanently
+          schema:
+            type: Redirect
+      summary: password recovery
+      tags:
+      - auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Here an exemple of the body
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.RegisterPayload'
+          type: object
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Account created.
+          schema:
+            $ref: '#/definitions/models.ResponsePayload'
+            type: object
+        "400":
+          description: Bad request.
+          schema:
+            $ref: '#/definitions/models.ResponsePayload'
+            type: object
+        "409":
+          description: Email already exist. or Username already exist.
+          schema:
+            $ref: '#/definitions/models.ResponsePayload'
+            type: object
+        "503":
+          description: Database unavailable.
+          schema:
+            $ref: '#/definitions/models.ResponsePayload'
+            type: object
+      summary: register a user into the system
+      tags:
+      - auth
+securityDefinitions:
+  BasicAuth:
+    type: basic
+swagger: "2.0"

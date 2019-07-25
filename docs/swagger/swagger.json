@@ -1,0 +1,293 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This is a sample golang server.",
+        "title": "APINIT-GO",
+        "contact": {
+            "name": "Luc Brulet",
+            "url": "https://www.linkedin.com/in/luc-brulet/",
+            "email": "luc.brulet@epitech.eu"
+        },
+        "license": {},
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/api/",
+    "paths": {
+        "/auth/confirm-account": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "confirm user's email",
+                "operationId": "get-string-by-int",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token of the user",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "301": {
+                        "description": "Moved Permanently",
+                        "schema": {
+                            "type": "Redirect"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/login": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Logs user into the system",
+                "parameters": [
+                    {
+                        "description": "Here an exemple of the body",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.LoginPayload"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "You are logged in.",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.LoginResponsePayload"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request.",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ResponsePayload"
+                        }
+                    },
+                    "404": {
+                        "description": "Account does not exist.",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ResponsePayload"
+                        }
+                    },
+                    "409": {
+                        "description": "Account is not verified.",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ResponsePayload"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/recovery": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "password recovery",
+                "parameters": [
+                    {
+                        "description": "Here an exemple of the body",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.RecoveryPayload"
+                        }
+                    }
+                ],
+                "responses": {
+                    "301": {
+                        "description": "Moved Permanently",
+                        "schema": {
+                            "type": "Redirect"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/register": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "register a user into the system",
+                "parameters": [
+                    {
+                        "description": "Here an exemple of the body",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.RegisterPayload"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Account created.",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ResponsePayload"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request.",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ResponsePayload"
+                        }
+                    },
+                    "409": {
+                        "description": "Email already exist. or Username already exist.",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ResponsePayload"
+                        }
+                    },
+                    "503": {
+                        "description": "Database unavailable.",
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/models.ResponsePayload"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "models.LoginPayload": {
+            "type": "object",
+            "required": [
+                "password",
+                "username"
+            ],
+            "properties": {
+                "password": {
+                    "type": "string",
+                    "example": "password123"
+                },
+                "username": {
+                    "type": "string",
+                    "example": "sankamille"
+                }
+            }
+        },
+        "models.LoginResponsePayload": {
+            "type": "object",
+            "required": [
+                "message",
+                "refresh-token",
+                "success",
+                "token"
+            ],
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "refresh-token": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                },
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.RecoveryPayload": {
+            "type": "object",
+            "required": [
+                "email"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.RegisterPayload": {
+            "type": "object",
+            "required": [
+                "email",
+                "password",
+                "username"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "luc.brulet@epitech.eu"
+                },
+                "password": {
+                    "type": "string",
+                    "example": "password123"
+                },
+                "username": {
+                    "type": "string",
+                    "example": "sankamille"
+                }
+            }
+        },
+        "models.ResponsePayload": {
+            "type": "object",
+            "required": [
+                "success"
+            ],
+            "properties": {
+                "message": {
+                    "type": "object",
+                    "required": [
+                        "message"
+                    ]
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "BasicAuth": {
+            "type": "basic"
+        }
+    }
+}
