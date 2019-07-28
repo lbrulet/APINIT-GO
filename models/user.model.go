@@ -21,7 +21,7 @@ type User struct {
 	ID         bson.ObjectId `json:"id" bson:"_id"`
 	Username   string        `json:"username" bson:"username" binding:"required"`
 	Email      string        `json:"email" bson:"email" binding:"required"`
-	Password   string        `json:"-" bson:"password" minLen:"8"`
+	Password   []byte        `json:"-" bson:"password" minLen:"8"`
 	Admin      bool          `json:"admin" bson:"admin"`
 	Verified   bool          `json:"verified" bson:"verified"`
 	AuthMethod AuthMethod    `json:"-" bson:"auth_method" binding:"required"`
