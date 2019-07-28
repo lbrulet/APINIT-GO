@@ -12,6 +12,7 @@ import (
 	"github.com/lbrulet/APINIT-GO/mongodb"
 	"github.com/lbrulet/APINIT-GO/utils"
 	"github.com/sethvargo/go-password/password"
+	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -32,7 +33,7 @@ func LoginController(c *gin.Context) {
 	db := mongodb.Database
 	if err := c.ShouldBindBodyWith(&payload, binding.JSON); err == nil {
 		if user, err := db.FindByKey("username", payload.Username); err == nil {
-			if user.Password != payload.Password {
+			if err := bcrypt.CompareHashAndPassword(user.Password, []byte(payload.Password)); err != nil {
 				utils.SendResponse(c, http.StatusNotFound, &models.ResponsePayload{Success: false, Message: "Username or password invalid."})
 				return
 			}
@@ -64,9 +65,9 @@ func LoginController(c *gin.Context) {
 // @Produce  json
 // @Param   Register payload      body models.RegisterPayload true "Here an exemple of the body"
 // @Success 201 {object} models.ResponsePayload "Account created.""
-// @Failure 400 {object} models.ResponsePayload "Bad request.""
+// @Failure 400 {object} models.ResponsePayload "Bad request."
 // @Failure 409 {object} models.ResponsePayload "Email already exist. or Username already exist."
-// @Failure 503 {object} models.ResponsePayload "Database unavailable.""
+// @Failure 503 {object} models.ResponsePayload "Database service unavailable. or Hash service unavailable."
 // @Router /auth/register [post]
 // RegisterController is a function that handle the register route
 func RegisterController(c *gin.Context) {
@@ -78,9 +79,13 @@ func RegisterController(c *gin.Context) {
 				var person models.User
 				person.ID = bson.NewObjectId()
 				person.Username = payload.Username
-				person.Password = payload.Password
 				person.Email = payload.Email
 				person.AuthMethod = models.LOCAL
+				if hash, err := bcrypt.GenerateFromPassword([]byte(payload.Password), 10); err != nil {
+					utils.SendResponse(c, http.StatusServiceUnavailable, &models.ResponsePayload{Success: false, Message: "Hash password unavailable."})
+				} else {
+					person.Password = hash
+				}
 				if err := db.Insert(person); err != nil {
 					utils.SendResponse(c, http.StatusServiceUnavailable, &models.ResponsePayload{Success: false, Message: "Database unavailable."})
 				} else {
