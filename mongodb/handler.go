@@ -54,7 +54,7 @@ func (m *DatabaseService) FindByID(id string) (models.User, error) {
 }
 
 // FindOrCreate create a new admin user if he does not exist
-func (m *DatabaseService) FindOrCreate(username string, password string, email string, isAdmin bool) error {
+func (m *DatabaseService) FindOrCreate(username string, password []byte, email string, isAdmin bool) error {
 	var user models.User
 	err := m.getCollection().Find(bson.M{"username": username}).One(&user)
 	if err != nil {

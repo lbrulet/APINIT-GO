@@ -1,8 +1,7 @@
 package mongodb
 
 import (
-	"fmt"
-
+	"golang.org/x/crypto/bcrypt"
 	mgo "gopkg.in/mgo.v2"
 
 	"github.com/lbrulet/APINIT-GO/configs"
@@ -23,9 +22,10 @@ var (
 
 // Connect is used to config & connect the api to the database
 func Connect() *DatabaseService {
-	fmt.Println(configs.Config)
 	Database.Config(configs.Config.DatabaseHost, configs.Config.DatabaseName, configs.Config.DatabaseCollection)
 	Database.Connect()
-	Database.FindOrCreate("admin", "admin123", "admin@apinit-go.eu", true)
+	if hash, err := bcrypt.GenerateFromPassword([]byte("admin123"), 10); err == nil {
+		Database.FindOrCreate("admin", hash, "admin@apinit-go.eu", true)
+	}
 	return &Database
 }
