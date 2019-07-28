@@ -81,11 +81,11 @@ func RegisterController(c *gin.Context) {
 				person.Username = payload.Username
 				person.Email = payload.Email
 				person.AuthMethod = models.LOCAL
-				person.Password = []byte(payload.Password)
-				// if hash, err := bcrypt.GenerateFromPassword([]byte(payload.Password), 10); err != nil {
-				// 	utils.SendResponse(c, http.StatusServiceUnavailable, &models.ResponsePayload{Success: false, Message: "Hash password unavailable."})
-				// } else {
-				// }
+				if hash, err := bcrypt.GenerateFromPassword([]byte(payload.Password), 10); err != nil {
+					utils.SendResponse(c, http.StatusServiceUnavailable, &models.ResponsePayload{Success: false, Message: "Hash password unavailable."})
+				} else {
+					person.Password = hash
+				}
 				if err := db.Insert(person); err != nil {
 					utils.SendResponse(c, http.StatusServiceUnavailable, &models.ResponsePayload{Success: false, Message: "Database unavailable."})
 				} else {
