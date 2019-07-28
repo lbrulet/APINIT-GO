@@ -86,7 +86,7 @@
                         }
                     },
                     "404": {
-                        "description": "Account does not exist.",
+                        "description": "Username or password invalid.",
                         "schema": {
                             "type": "object",
                             "$ref": "#/definitions/models.ResponsePayload"

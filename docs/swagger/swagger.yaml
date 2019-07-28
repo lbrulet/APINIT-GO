@@ -120,7 +120,7 @@ paths:
             $ref: '#/definitions/models.ResponsePayload'
             type: object
         "404":
-          description: Account does not exist.
+          description: Username or password invalid.
           schema:
             $ref: '#/definitions/models.ResponsePayload'
             type: object
