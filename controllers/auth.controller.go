@@ -31,31 +31,39 @@ import (
 func LoginController(c *gin.Context) {
 	payload := models.LoginPayload{}
 	db := mongodb.Database
-	if err := c.ShouldBindBodyWith(&payload, binding.JSON); err == nil {
-		if user, err := db.FindByKey("username", payload.Username); err == nil {
-			if err := bcrypt.CompareHashAndPassword(user.Password, []byte(payload.Password)); err != nil {
-				utils.SendResponse(c, http.StatusNotFound, &models.ResponsePayload{Success: false, Message: "Username or password invalid."})
-				return
-			}
-			if user.Verified == true {
-				if token, err := utils.CreateToken(user, time.Now().Add(time.Hour*configs.Config.AccessTokenValidityTime).Unix()); err != nil {
-					utils.SendResponse(c, http.StatusBadRequest, &models.ResponsePayload{Success: false, Message: "Bad request."})
-				} else {
-					if refresh, err := utils.CreateToken(user, time.Now().Add(time.Hour*configs.Config.RefreshTokenValidityTime).Unix()); err != nil {
-						utils.SendResponse(c, http.StatusBadRequest, &models.ResponsePayload{Success: false, Message: "Bad request."})
-					} else {
-						utils.SendLoginResponse(c, http.StatusOK, &models.LoginResponsePayload{Success: true, Message: "You are logged in.", Token: token, RefreshToken: refresh})
-					}
-				}
-			} else {
-				utils.SendResponse(c, http.StatusConflict, &models.ResponsePayload{Success: false, Message: "Account is not verified."})
-			}
-		} else {
-			utils.SendResponse(c, http.StatusNotFound, &models.ResponsePayload{Success: false, Message: "Username or password invalid."})
-		}
-	} else {
+
+	if err := c.ShouldBindBodyWith(&payload, binding.JSON); err != nil {
+		utils.SendResponse(c, http.StatusBadRequest, &models.ResponsePayload{Success: false, Message: "Bad request."})
+		return
+	}
+
+	user, err := db.FindByKey("username", payload.Username)
+	if err != nil {
+		utils.SendResponse(c, http.StatusNotFound, &models.ResponsePayload{Success: false, Message: "Username or password invalid."})
+		return
+	}
+
+	if err := bcrypt.CompareHashAndPassword(user.Password, []byte(payload.Password)); err != nil {
+		utils.SendResponse(c, http.StatusNotFound, &models.ResponsePayload{Success: false, Message: "Username or password invalid."})
+		return
+	}
+
+	if !user.Verified {
+		utils.SendResponse(c, http.StatusConflict, &models.ResponsePayload{Success: false, Message: "Account is not verified."})
+	}
+
+	token, err := utils.CreateToken(user, time.Now().Add(time.Hour*configs.Config.AccessTokenValidityTime).Unix())
+	if err != nil {
+		utils.SendResponse(c, http.StatusBadRequest, &models.ResponsePayload{Success: false, Message: "Bad request."})
+		return
+	}
+
+	refresh, err := utils.CreateToken(user, time.Now().Add(time.Hour*configs.Config.RefreshTokenValidityTime).Unix())
+	if err != nil {
 		utils.SendResponse(c, http.StatusBadRequest, &models.ResponsePayload{Success: false, Message: "Bad request."})
 	}
+
+	utils.SendLoginResponse(c, http.StatusOK, &models.LoginResponsePayload{Success: true, Message: "You are logged in.", Token: token, RefreshToken: refresh})
 }
 
 // RegisterController godoc
@@ -73,46 +81,54 @@ func LoginController(c *gin.Context) {
 func RegisterController(c *gin.Context) {
 	payload := models.RegisterPayload{}
 	db := mongodb.Database
-	if err := c.ShouldBindBodyWith(&payload, binding.JSON); err == nil {
-		if _, err := db.FindByKey("username", payload.Username); err != nil {
-			if _, err := db.FindByKey("email", payload.Email); err != nil {
-				var person models.User
-				person.ID = bson.NewObjectId()
-				person.Username = payload.Username
-				person.Email = payload.Email
-				person.AuthMethod = models.LOCAL
-				if hash, err := bcrypt.GenerateFromPassword([]byte(payload.Password), 10); err != nil {
-					utils.SendResponse(c, http.StatusServiceUnavailable, &models.ResponsePayload{Success: false, Message: "Hash password unavailable."})
-				} else {
-					person.Password = hash
-				}
-				if err := db.Insert(person); err != nil {
-					utils.SendResponse(c, http.StatusServiceUnavailable, &models.ResponsePayload{Success: false, Message: "Database unavailable."})
-				} else {
-					if token, err := utils.CreateToken(person, time.Now().Add(time.Hour*configs.Config.AccessTokenValidityTime).Unix()); err != nil {
-						utils.SendResponse(c, http.StatusBadRequest, &models.ResponsePayload{Success: false, Message: "Bad request."})
-					} else {
-						if pwd, err := os.Getwd(); err != nil {
-							panic(err)
-						} else {
-							utils.SendMail(person, models.Template{
-								Email:        person.Email,
-								Username:     person.Username,
-								ConfirmEmail: configs.Config.MailConfirmationLink + "?token=" + token,
-							}, pwd+"/templates/welcome.html")
-						}
-					}
-					utils.SendResponse(c, http.StatusCreated, &models.ResponsePayload{Success: true, Message: "Account created."})
-				}
-			} else {
-				utils.SendResponse(c, http.StatusConflict, &models.ResponsePayload{Success: false, Message: "Email already exist."})
-			}
-		} else {
-			utils.SendResponse(c, http.StatusConflict, &models.ResponsePayload{Success: false, Message: "Username already exist."})
-		}
-	} else {
+
+	if err := c.ShouldBindBodyWith(&payload, binding.JSON); err != nil {
 		utils.SendResponse(c, http.StatusBadRequest, &models.ResponsePayload{Success: false, Message: "Bad request."})
+		return
 	}
+
+	if _, err := db.FindByKey("username", payload.Username); err == nil {
+		utils.SendResponse(c, http.StatusConflict, &models.ResponsePayload{Success: false, Message: "Username already exist."})
+		return
+	}
+
+	if _, err := db.FindByKey("email", payload.Email); err == nil {
+		utils.SendResponse(c, http.StatusConflict, &models.ResponsePayload{Success: false, Message: "Email already exist."})
+		return
+	}
+
+	var person models.User
+	person.ID = bson.NewObjectId()
+	person.Username = payload.Username
+	person.Email = payload.Email
+	person.AuthMethod = models.LOCAL
+
+	hash, err := bcrypt.GenerateFromPassword([]byte(payload.Password), 10)
+	if err != nil {
+		utils.SendResponse(c, http.StatusServiceUnavailable, &models.ResponsePayload{Success: false, Message: "Hash password unavailable."})
+		return
+	}
+	person.Password = hash
+
+	if err := db.Insert(person); err != nil {
+		utils.SendResponse(c, http.StatusServiceUnavailable, &models.ResponsePayload{Success: false, Message: "Database unavailable."})
+		return
+	}
+
+	if token, err := utils.CreateToken(person, time.Now().Add(time.Hour*configs.Config.AccessTokenValidityTime).Unix()); err != nil {
+		utils.SendResponse(c, http.StatusBadRequest, &models.ResponsePayload{Success: false, Message: "Bad request."})
+	} else {
+		if pwd, err := os.Getwd(); err != nil {
+			panic(err)
+		} else {
+			utils.SendMail(person, models.Template{
+				Email:        person.Email,
+				Username:     person.Username,
+				ConfirmEmail: configs.Config.MailConfirmationLink + "?token=" + token,
+			}, pwd+"/templates/welcome.html")
+		}
+	}
+	utils.SendResponse(c, http.StatusCreated, &models.ResponsePayload{Success: true, Message: "Account created."})
 }
 
 // RecoveryController godoc
