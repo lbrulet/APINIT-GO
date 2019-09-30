@@ -26,3 +26,19 @@ type User struct {
 	Verified   bool          `json:"verified" bson:"verified"`
 	AuthMethod AuthMethod    `json:"-" bson:"auth_method" binding:"required"`
 }
+
+// UserUpdate is a struct used to update a user
+type UserUpdate struct {
+	Username string `json:"username" exemple:"sankamille"`
+	Email    string `json:"email" exemple:""`
+	Password string `json:"password" exemple:"test"`
+	Admin    bool   `json:"admin"`
+	Verified bool   `json:"verified"`
+}
+
+// UserUpdateSWAGGER is a struct used to update a user
+type UserUpdateSWAGGER struct {
+	Username string `json:"username" exemple:"sankamille"`
+	Email    string `json:"email" exemple:""`
+	Password string `json:"password" exemple:"test"`
+}
