@@ -50,6 +50,7 @@ func LoginController(c *gin.Context) {
 
 	if !user.Verified {
 		utils.SendResponse(c, http.StatusConflict, &models.ResponsePayload{Success: false, Message: "Account is not verified."})
+		return
 	}
 
 	token, err := utils.CreateToken(user, time.Now().Add(time.Hour*configs.Config.AccessTokenValidityTime).Unix())
@@ -63,7 +64,7 @@ func LoginController(c *gin.Context) {
 		utils.SendResponse(c, http.StatusBadRequest, &models.ResponsePayload{Success: false, Message: "Bad request."})
 	}
 
-	utils.SendLoginResponse(c, http.StatusOK, &models.LoginResponsePayload{Success: true, Message: "You are logged in.", Token: token, RefreshToken: refresh})
+	utils.SendLoginResponse(c, http.StatusOK, &models.LoginResponsePayload{Success: true, Message: "You are logged in.", Token: token, RefreshToken: refresh, User: user})
 }
 
 // RegisterController godoc
@@ -127,8 +128,8 @@ func RegisterController(c *gin.Context) {
 				ConfirmEmail: configs.Config.MailConfirmationLink + "?token=" + token,
 			}, pwd+"/templates/welcome.html")
 		}
+		utils.SendRegisterResponse(c, http.StatusCreated, &models.RegisterResponsePayload{Success: true, Message: "Account created.", Token: token, User: person})
 	}
-	utils.SendResponse(c, http.StatusCreated, &models.ResponsePayload{Success: true, Message: "Account created."})
 }
 
 // RecoveryController godoc
@@ -146,7 +147,7 @@ func RecoveryController(c *gin.Context) {
 	if err := c.ShouldBindBodyWith(&payload, binding.JSON); err == nil {
 		if user, err := db.FindByKey("email", payload.Email); err == nil {
 			if res, err := password.Generate(7, 2, 2, false, false); err != nil {
-				c.Redirect(http.StatusMovedPermanently, configs.Config.MailSuccessRedirect)
+				utils.SendResponse(c, http.StatusInternalServerError, &models.ResponsePayload{Success: false, Message: "Bad request."})
 			} else {
 				if pwd, err := os.Getwd(); err != nil {
 					panic(err)
@@ -157,13 +158,13 @@ func RecoveryController(c *gin.Context) {
 						Password: res,
 					}, pwd+"/templates/recovery.html")
 				}
-				c.Redirect(http.StatusMovedPermanently, configs.Config.MailSuccessRedirect)
+				utils.SendResponse(c, http.StatusOK, &models.ResponsePayload{Success: true, Message: "Recovery email sended."})
 			}
 		} else {
-			c.Redirect(http.StatusMovedPermanently, configs.Config.MailFailedRedirect)
+			utils.SendResponse(c, http.StatusInternalServerError, &models.ResponsePayload{Success: false, Message: "Bad request."})
 		}
 	} else {
-		c.Redirect(http.StatusMovedPermanently, configs.Config.MailFailedRedirect)
+		utils.SendResponse(c, http.StatusInternalServerError, &models.ResponsePayload{Success: false, Message: "Bad request."})
 	}
 }
 
