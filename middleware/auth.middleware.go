@@ -10,6 +10,10 @@ import (
 	"github.com/lbrulet/APINIT-GO/utils"
 )
 
+type testHeader struct {
+	Token string `header:"Authorization"`
+}
+
 // IsAuthorized is a middleware that check if the token is valid
 // id := c.MustGet("id").(string) to get the setting value by gin-gonic
 func IsAuthorized(c *gin.Context) {
