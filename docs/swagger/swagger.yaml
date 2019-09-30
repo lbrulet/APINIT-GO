@@ -62,6 +62,31 @@ definitions:
     required:
     - success
     type: object
+  models.User:
+    properties:
+      admin:
+        type: boolean
+      email:
+        type: string
+      id:
+        type: string
+      username:
+        type: string
+      verified:
+        type: boolean
+    required:
+    - email
+    - username
+    type: object
+  models.UserUpdateSWAGGER:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    type: object
 host: localhost:8080
 info:
   contact:
@@ -185,13 +210,95 @@ paths:
             $ref: '#/definitions/models.ResponsePayload'
             type: object
         "503":
-          description: Database unavailable.
+          description: Database service unavailable. or Hash service unavailable.
           schema:
             $ref: '#/definitions/models.ResponsePayload'
             type: object
       summary: register a user into the system
       tags:
       - auth
+  /users/:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.User'
+            type: array
+        "503":
+          description: Database unvailable.
+          schema:
+            type: string
+      security:
+      - BasicAuth: []
+      summary: get all users
+      tags:
+      - admin
+  /users/me:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+            type: object
+        "404":
+          description: User not found.
+          schema:
+            type: string
+      security:
+      - BasicAuth: []
+      summary: get user identity
+      tags:
+      - user
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Here an exemple of the body
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserUpdateSWAGGER'
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success update!
+          schema:
+            type: string
+        "400":
+          description: Bad request.
+          schema:
+            type: string
+        "404":
+          description: User not found.
+          schema:
+            type: string
+        "409":
+          description: Username already exist. or Email already exist
+          schema:
+            type: string
+        "503":
+          description: Database unavailable.
+          schema:
+            type: string
+      security:
+      - BasicAuth: []
+      summary: update a user
+      tags:
+      - user
 securityDefinitions:
   BasicAuth:
     type: basic
