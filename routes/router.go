@@ -2,8 +2,6 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
-	ginSwagger "github.com/swaggo/gin-swagger"
-	"github.com/swaggo/gin-swagger/swaggerFiles"
 
 	_ "github.com/lbrulet/APINIT-GO/docs"
 	"github.com/lbrulet/APINIT-GO/routes/authentication"
@@ -25,17 +23,16 @@ func InitRouter() *gin.Engine {
 
 	router.Use(CORS(), gin.Logger(), gin.Recovery())
 
-	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	apiRouter := router.Group("/api")
 
-	api := router.Group("/api")
+	authRouter := apiRouter.Group("/auth")
+	authentication.RegisterAuthService(authRouter)
 
-	auth := api.Group("/auth")
+	userRouter := apiRouter.Group("/user")
+	users.RegisterUserService(userRouter)
 
-	authentication.RegisterAuthService(auth)
-
-	user := api.Group("/users")
-
-	users.RegisterUsersService(user)
+	adminUserRouter := apiRouter.Group("/admin/user")
+	users.RegisterAdminUserService(adminUserRouter)
 
 	return router
 }
