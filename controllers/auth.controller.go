@@ -16,17 +16,6 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-// LoginController godoc
-// @tags auth
-// @Summary Logs user into the system
-// @Accept  json
-// @Produce  json
-// @Param   Login payload      body models.LoginPayload true  "Here an exemple of the body"
-// @Success 200 {object} models.LoginResponsePayload "You are logged in."
-// @Failure 400 {object} models.ResponsePayload "Bad request."
-// @Failure 404 {object} models.ResponsePayload "Username or password invalid."
-// @Failure 409 {object} models.ResponsePayload "Account is not verified."
-// @Router /auth/login [post]
 // LoginController is a function that handle the login route
 func LoginController(c *gin.Context) {
 	payload := models.LoginPayload{}
@@ -67,17 +56,6 @@ func LoginController(c *gin.Context) {
 	utils.SendLoginResponse(c, http.StatusOK, &models.LoginResponsePayload{Success: true, Message: "You are logged in.", Token: token, RefreshToken: refresh, User: user})
 }
 
-// RegisterController godoc
-// @tags auth
-// @Summary register a user into the system
-// @Accept  json
-// @Produce  json
-// @Param   Register payload      body models.RegisterPayload true "Here an exemple of the body"
-// @Success 201 {object} models.ResponsePayload "Account created.""
-// @Failure 400 {object} models.ResponsePayload "Bad request."
-// @Failure 409 {object} models.ResponsePayload "Email already exist. or Username already exist."
-// @Failure 503 {object} models.ResponsePayload "Database service unavailable. or Hash service unavailable."
-// @Router /auth/register [post]
 // RegisterController is a function that handle the register route
 func RegisterController(c *gin.Context) {
 	payload := models.RegisterPayload{}
@@ -132,14 +110,6 @@ func RegisterController(c *gin.Context) {
 	}
 }
 
-// RecoveryController godoc
-// @tags auth
-// @Summary password recovery
-// @Accept  json
-// @Produce  json
-// @Param   Recovery payload      body models.RecoveryPayload true "Here an exemple of the body"
-// @Success 301 Redirect Redirect
-// @Router /auth/recovery [post]
 // RecoveryController is a function that handle the recovery password route
 func RecoveryController(c *gin.Context) {
 	payload := models.RecoveryPayload{}
@@ -168,15 +138,6 @@ func RecoveryController(c *gin.Context) {
 	}
 }
 
-// ConfirmAccountController godoc
-// @tags auth
-// @Summary confirm user's email
-// @ID get-string-by-int
-// @Accept  json
-// @Produce  json
-// @Param id path string true "token of the user"
-// @Success 301 Redirect Redirect
-// @Router /auth/confirm-account?token={id} [get]
 // ConfirmAccountController is a function that hundle the confirm account route
 func ConfirmAccountController(c *gin.Context) {
 	token := c.Query("token")
