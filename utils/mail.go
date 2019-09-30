@@ -22,7 +22,12 @@ func SendMail(user models.User, formMail interface{}, pathTotemplate string) {
 		e := email.NewEmail()
 		e.From = configs.Config.MailFrom
 		e.To = []string{user.Email}
-		e.Subject = configs.Config.MailSubject
+		switch formMail.(type) {
+		case models.Template:
+			e.Subject = configs.Config.MailSubjectConfirmAccount
+		case models.TemplateRecovery:
+			e.Subject = configs.Config.MailSubjectRecoveryAccount
+		}
 		e.HTML = []byte(tpl.String())
 		go func() {
 			if len(configs.Config.MailAddress) != 0 && len(configs.Config.MailPassword) != 0 {
