@@ -35,10 +35,3 @@ type UserUpdate struct {
 	Admin    bool   `json:"admin"`
 	Verified bool   `json:"verified"`
 }
-
-// UserUpdateSWAGGER is a struct used to update a user
-type UserUpdateSWAGGER struct {
-	Username string `json:"username" exemple:"sankamille"`
-	Email    string `json:"email" exemple:""`
-	Password string `json:"password" exemple:"test"`
-}
