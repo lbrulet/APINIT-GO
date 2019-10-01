@@ -106,14 +106,6 @@
   version = "v0.19.2"
 
 [[projects]]
-  digest = "1:2de91ae845491f7158c1644a1183d2bbcc5a7bd668768b60a91519f848603dad"
-  name = "github.com/go-openapi/swag"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "de649ffb9e02183a414820c5b1b4582f7b009792"
-  version = "v0.19.4"
-
-[[projects]]
   digest = "1:573ca21d3669500ff845bdebee890eb7fc7f0f50c59f2132f2a0c6b03d85086a"
   name = "github.com/golang/protobuf"
   packages = ["proto"]
@@ -196,25 +188,6 @@
   pruneopts = "UT"
   revision = "bc15c697eeda69a082991d2f1ed37660658fea32"
   version = "v0.1.2"
-
-[[projects]]
-  digest = "1:3d0dece69eb2451bdac0d1768c5fcd520af4b0539a59fcffbdf7dfc201f34148"
-  name = "github.com/swaggo/gin-swagger"
-  packages = [
-    ".",
-    "swaggerFiles",
-  ]
-  pruneopts = "UT"
-  revision = "ddb15761267c07109d8249ad8230df5ecf94c1c7"
-  version = "v1.2.0"
-
-[[projects]]
-  digest = "1:d5fc6d4d721d16395a483c4f4aae278627031175166de6d2bb302be23e6b4826"
-  name = "github.com/swaggo/swag"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "52091f11ff1d0c58cd3403970c6160713f117246"
-  version = "v1.6.2"
 
 [[projects]]
   digest = "1:5a1cf4e370bc86137b58da2ae065e76526d32b11f62a7665f36dbd5f41fa95ff"
@@ -337,9 +310,6 @@
     "github.com/jordan-wright/email",
     "github.com/lbrulet/gonfig",
     "github.com/sethvargo/go-password/password",
-    "github.com/swaggo/gin-swagger",
-    "github.com/swaggo/gin-swagger/swaggerFiles",
-    "github.com/swaggo/swag",
     "golang.org/x/crypto/bcrypt",
     "gopkg.in/mgo.v2",
     "gopkg.in/mgo.v2/bson",
