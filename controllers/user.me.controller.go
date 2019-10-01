@@ -12,15 +12,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// GetUser godoc
-// @tags user
-// @Summary get user identity
-// @Accept  json
-// @Produce  json
-// @Success 200 {object} models.User
-// @Failure 404 {string} string "User not found."
-// @Router /users/me [get]
-// @Security BasicAuth
 // GetUser is a function that get the user identity
 func GetUser(c *gin.Context) {
 	id := c.Param("id")
@@ -40,19 +31,6 @@ func GetUser(c *gin.Context) {
 	}
 }
 
-// UpdateUser godoc
-// @tags user
-// @Summary update a user
-// @Accept  json
-// @Produce  json
-// @Param   UserUpdate payload      body models.UserUpdateSWAGGER true "Here an exemple of the body"
-// @Success 200 {string} string "Success update!"
-// @Failure 400 {string} string "Bad request."
-// @Failure 404 {string} string "User not found."
-// @Failure 409 {string} string "Username already exist. or Email already exist."
-// @Failure 503 {string} string "Database unavailable."
-// @Router /users/me [put]
-// @Security BasicAuth
 // UpdateUser is a function that get the user identity
 func UpdateUser(c *gin.Context) {
 	id := c.Param("id")
