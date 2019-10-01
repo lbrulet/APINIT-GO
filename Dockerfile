@@ -8,16 +8,11 @@ RUN chmod +x /usr/bin/dep
 # Copy the code from the host and compile it
 WORKDIR $GOPATH/src/github.com/lbrulet/APINIT-GO
 
-# Download and install swagger #documentation
-RUN go get -u github.com/swaggo/swag/cmd/swag
-
 COPY Gopkg.toml Gopkg.lock ./
 
 RUN dep ensure --vendor-only -v
 
 COPY . ./
-
-RUN swag init -g server.go
 
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o APINIT-GO .
 
