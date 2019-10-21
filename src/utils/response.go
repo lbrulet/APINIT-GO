@@ -2,7 +2,7 @@ package utils
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/lbrulet/APINIT-GO/models"
+	"github.com/lbrulet/APINIT-GO/src/models"
 )
 
 // SendResponse is used to respond to the client

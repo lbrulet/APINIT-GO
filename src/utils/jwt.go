@@ -3,7 +3,7 @@ package utils
 import (
 	"errors"
 
-	"github.com/lbrulet/APINIT-GO/models"
+	"github.com/lbrulet/APINIT-GO/src/models"
 
 	jwt "github.com/dgrijalva/jwt-go"
 )

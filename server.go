@@ -1,29 +1,25 @@
 package main
 
 import (
-	"github.com/lbrulet/APINIT-GO/configs"
-	"github.com/lbrulet/APINIT-GO/mongodb"
-	"github.com/lbrulet/APINIT-GO/routes"
+	"fmt"
+
+	"github.com/lbrulet/APINIT-GO/src/configs"
+	"github.com/lbrulet/APINIT-GO/src/database"
+	"github.com/lbrulet/APINIT-GO/src/mongodb"
+	"github.com/lbrulet/APINIT-GO/src/routes"
 )
 
-// @title APINIT-GO
-// @version 1.0
-// @description This is a sample golang server.
-
-// @contact.name Luc Brulet
-// @contact.url https://www.linkedin.com/in/luc-brulet/
-// @contact.email luc.brulet@epitech.eu
-
-// @host localhost:8080
-// @BasePath /api/
-
-// @securityDefinitions.basic BasicAuth
 func main() {
 	configs.InitConfig()
-	db := mongodb.Connect()
-	defer db.GetDatabase().Close()
+	err := database.InitDB()
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		db := mongodb.Connect()
+		defer db.GetDatabase().Close()
 
-	srv := routes.InitRouter()
+		srv := routes.InitRouter()
 
-	srv.Run(configs.Config.Port)
+		srv.Run(configs.Config.Port)
+	}
 }

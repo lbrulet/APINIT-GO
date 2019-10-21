@@ -1,18 +1,40 @@
-version: '3.3'
+version: "3.3"
 services:
   apinit:
-    container_name: 'apinit'
+    container_name: apinit
+    image: golanginit
     environment:
       - LOCAL=DEV
-    build: './'
+    build: "./"
     ports:
-      - '8080:8080'
-    volumes:
-      - './apinit:/go/src/app'
+      - "8080:8080"
     depends_on:
-      - 'mongodb' 
+      - "mongodb"
+      - "mysql"
   mongodb:
-    image: 'mongo:latest'
-    container_name: 'mongodb'
+    image: "mongo:latest"
+    container_name: "mongodb"
     ports:
-      - '27100:27017'
+      - "27100:27017"
+  mysql:
+    container_name: apinit-sql
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_DATABASE: "apinit_go"
+      MYSQL_USER: "root"
+      MYSQL_PASSWORD: "root"
+      # Password for root access
+      MYSQL_ROOT_PASSWORD: "root"
+    ports:
+      # <Port exposed> : < MySQL Port running inside container>
+      - "3306:3306"
+    expose:
+      # Opens port 3306 on the container
+      - "3306"
+      # Where our data will be persisted
+    volumes:
+      - mysql:/var/lib/mysql
+
+volumes:
+   mysql:

@@ -3,9 +3,8 @@ package routes
 import (
 	"github.com/gin-gonic/gin"
 
-	_ "github.com/lbrulet/APINIT-GO/docs"
-	"github.com/lbrulet/APINIT-GO/routes/authentication"
-	"github.com/lbrulet/APINIT-GO/routes/users"
+	"github.com/lbrulet/APINIT-GO/src/routes/authentication"
+	"github.com/lbrulet/APINIT-GO/src/routes/users"
 )
 
 // CORS allow request from outside

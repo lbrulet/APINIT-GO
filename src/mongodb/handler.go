@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/lbrulet/APINIT-GO/models"
+	"github.com/lbrulet/APINIT-GO/src/models"
 	mgo "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )

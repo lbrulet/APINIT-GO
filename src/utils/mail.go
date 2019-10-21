@@ -8,8 +8,8 @@ import (
 
 	"github.com/jordan-wright/email"
 
-	"github.com/lbrulet/APINIT-GO/configs"
-	"github.com/lbrulet/APINIT-GO/models"
+	"github.com/lbrulet/APINIT-GO/src/configs"
+	"github.com/lbrulet/APINIT-GO/src/models"
 )
 
 // SendMail is used to send an email

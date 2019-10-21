@@ -8,6 +8,9 @@ type Configuration struct {
 	DatabaseName               string `json:"database_name" env:"DATABASE_NAME"`
 	DatabaseCollection         string `json:"database_collection" env:"DATABASE_COLLECTION"`
 	DatabaseHost               string `json:"database_host" env:"DATABASE_HOST"`
+	DatabaseEndPoint           string `json:"database_endpoint" env:"DATABASE_ENDPOINT"`
+	DatabaseUser               string `json:"database_user" env:"DATABASE_USER"`
+	DatabasePassword           string `json:"database_password" env:"DATABASE_PASSWORD"`
 	MailFrom                   string `json:"mail_from" env:"MAIL_FROM"`
 	MailSubjectConfirmAccount  string `json:"mail_subject_confirm_account" env:"MAIL_SUBJECT_CONFIRM_ACCOUNT"`
 	MailSubjectRecoveryAccount string `json:"mail_subject_recovery_account" env:"MAIL_SUBJECT_RECOVERY_ACCOUNT"`

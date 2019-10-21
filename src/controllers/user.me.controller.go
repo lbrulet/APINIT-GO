@@ -6,9 +6,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
-	"github.com/lbrulet/APINIT-GO/models"
-	"github.com/lbrulet/APINIT-GO/mongodb"
-	"github.com/lbrulet/APINIT-GO/utils"
+	"github.com/lbrulet/APINIT-GO/src/models"
+	"github.com/lbrulet/APINIT-GO/src/mongodb"
+	"github.com/lbrulet/APINIT-GO/src/utils"
 	"golang.org/x/crypto/bcrypt"
 )
 

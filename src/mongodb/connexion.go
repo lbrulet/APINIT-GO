@@ -4,7 +4,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	mgo "gopkg.in/mgo.v2"
 
-	"github.com/lbrulet/APINIT-GO/configs"
+	"github.com/lbrulet/APINIT-GO/src/configs"
 )
 
 // DatabaseService is a struct that containt all informations about the database

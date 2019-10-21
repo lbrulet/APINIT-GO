@@ -2,8 +2,8 @@ package users
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/lbrulet/APINIT-GO/controllers"
-	"github.com/lbrulet/APINIT-GO/middleware"
+	"github.com/lbrulet/APINIT-GO/src/controllers"
+	"github.com/lbrulet/APINIT-GO/src/middleware"
 )
 
 func RegisterAdminUserService(route *gin.RouterGroup) {

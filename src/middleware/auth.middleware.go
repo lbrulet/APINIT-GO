@@ -5,9 +5,10 @@ import (
 
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-	"github.com/lbrulet/APINIT-GO/models"
-	"github.com/lbrulet/APINIT-GO/mongodb"
-	"github.com/lbrulet/APINIT-GO/utils"
+
+	"github.com/lbrulet/APINIT-GO/src/models"
+	"github.com/lbrulet/APINIT-GO/src/mongodb"
+	"github.com/lbrulet/APINIT-GO/src/utils"
 )
 
 type testHeader struct {
