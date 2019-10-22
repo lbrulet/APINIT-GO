@@ -1,7 +1,5 @@
 {
   "app_port": ":8080",
-  "database_host": "localhost:27017",
-  "database_collection": "users",
   "database_name": "apinit_go",
   "database_endpoint": "127.0.0.1:3306",
   "database_user": "root",

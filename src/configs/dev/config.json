@@ -1,7 +1,5 @@
 {
   "app_port": ":8080",
-  "database_host": "mongodb:27017",
-  "database_collection": "users",
   "database_name": "apinit_go",
   "database_endpoint": "mysql:3306",
   "database_user": "root",
