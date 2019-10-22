@@ -10,10 +10,18 @@ WORKDIR $GOPATH/src/github.com/lbrulet/APINIT-GO
 
 COPY Gopkg.toml Gopkg.lock ./
 
+ADD run.sh ./
+
+COPY src/database/migrations ./src
+
+RUN go get -u -d github.com/golang-migrate/migrate/cmd/migrate
+
+RUN go get -tags 'mysql' -u github.com/golang-migrate/migrate/cmd/migrate
+
 RUN dep ensure --vendor-only -v
 
 COPY . ./
 
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o APINIT-GO .
 
-CMD ["./APINIT-GO"]
+CMD ["./run.sh"]
