@@ -13,7 +13,7 @@ import (
 )
 
 // SendMail is used to send an email
-func SendMail(user models.User, formMail interface{}, pathTotemplate string) {
+func SendMail(user *models.User, formMail interface{}, pathTotemplate string) {
 	if tmpl, err := template.ParseFiles(pathTotemplate); err != nil {
 		fmt.Printf("[WARNING] %s!\n", err)
 	} else {

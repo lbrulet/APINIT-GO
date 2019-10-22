@@ -6,6 +6,6 @@ import (
 
 // Claims is the jwt struct
 type Claims struct {
-	ID string `json:"id"`
+	ID int `json:"id"`
 	jwt.StandardClaims
 }

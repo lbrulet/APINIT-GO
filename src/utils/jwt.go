@@ -9,10 +9,10 @@ import (
 )
 
 // CreateToken create a jwt token depending to the user's id
-func CreateToken(user models.User, ExpiresAt int64) (string, error) {
+func CreateToken(user *models.User, ExpiresAt int64) (string, error) {
 
 	claims := &models.Claims{
-		ID: user.ID.Hex(),
+		ID: user.ID,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: ExpiresAt,
 		},

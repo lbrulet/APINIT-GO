@@ -6,8 +6,8 @@ import (
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 
+	"github.com/lbrulet/APINIT-GO/src/database"
 	"github.com/lbrulet/APINIT-GO/src/models"
-	"github.com/lbrulet/APINIT-GO/src/mongodb"
 	"github.com/lbrulet/APINIT-GO/src/utils"
 )
 
@@ -19,7 +19,6 @@ type testHeader struct {
 // id := c.MustGet("id").(string) to get the setting value by gin-gonic
 func IsAuthorized(c *gin.Context) {
 	if c.Request.Header["Authorization"] != nil {
-		users := mongodb.Database
 		token := c.Request.Header["Authorization"][0][7:len(c.Request.Header["Authorization"][0])]
 		claims := &models.Claims{}
 
@@ -37,7 +36,7 @@ func IsAuthorized(c *gin.Context) {
 			utils.SendResponse(c, http.StatusUnauthorized, &models.ResponsePayload{Success: false, Message: "Not Authorized"})
 			return
 		}
-		if _, err := users.FindByID(claims.ID); err == nil {
+		if _, err := database.Database.GetUserByID(claims.ID); err == nil {
 			c.Set("id", claims.ID)
 			c.Next()
 		} else {
@@ -52,7 +51,6 @@ func IsAuthorized(c *gin.Context) {
 // id := c.MustGet("id").(string) to get the setting value by gin-gonic
 func IsAdmin(c *gin.Context) {
 	if c.Request.Header["Authorization"] != nil {
-		users := mongodb.Database
 		token := c.Request.Header["Authorization"][0][7:len(c.Request.Header["Authorization"][0])]
 		claims := &models.Claims{}
 
@@ -70,7 +68,7 @@ func IsAdmin(c *gin.Context) {
 			utils.SendResponse(c, http.StatusUnauthorized, &models.ResponsePayload{Success: false, Message: "Admin reserved action"})
 			return
 		}
-		if user, err := users.FindByID(claims.ID); err == nil && user.Admin == true {
+		if user, err := database.Database.GetUserByID(claims.ID); err == nil && user.Admin == true {
 			c.Set("id", claims.ID)
 			c.Next()
 		} else {

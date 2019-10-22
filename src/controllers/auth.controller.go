@@ -8,31 +8,29 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/lbrulet/APINIT-GO/src/configs"
+	"github.com/lbrulet/APINIT-GO/src/database"
 	"github.com/lbrulet/APINIT-GO/src/models"
-	"github.com/lbrulet/APINIT-GO/src/mongodb"
 	"github.com/lbrulet/APINIT-GO/src/utils"
 	"github.com/sethvargo/go-password/password"
 	"golang.org/x/crypto/bcrypt"
-	"gopkg.in/mgo.v2/bson"
 )
 
 // LoginController is a function that handle the login route
 func LoginController(c *gin.Context) {
 	payload := models.LoginPayload{}
-	db := mongodb.Database
 
 	if err := c.ShouldBindBodyWith(&payload, binding.JSON); err != nil {
 		utils.SendResponse(c, http.StatusBadRequest, &models.ResponsePayload{Success: false, Message: "Bad request."})
 		return
 	}
 
-	user, err := db.FindByKey("username", payload.Username)
+	user, err := database.Database.FindUserByKey("username", payload.Username)
 	if err != nil {
 		utils.SendResponse(c, http.StatusNotFound, &models.ResponsePayload{Success: false, Message: "Username or password invalid."})
 		return
 	}
 
-	if err := bcrypt.CompareHashAndPassword(user.Password, []byte(payload.Password)); err != nil {
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(payload.Password)); err != nil {
 		utils.SendResponse(c, http.StatusNotFound, &models.ResponsePayload{Success: false, Message: "Username or password invalid."})
 		return
 	}
@@ -53,31 +51,35 @@ func LoginController(c *gin.Context) {
 		utils.SendResponse(c, http.StatusBadRequest, &models.ResponsePayload{Success: false, Message: "Bad request."})
 	}
 
-	utils.SendLoginResponse(c, http.StatusOK, &models.LoginResponsePayload{Success: true, Message: "You are logged in.", Token: token, RefreshToken: refresh, User: user})
+	utils.SendLoginResponse(c, http.StatusOK, &models.LoginResponsePayload{Success: true, Message: "You are logged in.", Token: token, RefreshToken: refresh, User: *user})
 }
 
 // RegisterController is a function that handle the register route
 func RegisterController(c *gin.Context) {
 	payload := models.RegisterPayload{}
-	db := mongodb.Database
 
 	if err := c.ShouldBindBodyWith(&payload, binding.JSON); err != nil {
 		utils.SendResponse(c, http.StatusBadRequest, &models.ResponsePayload{Success: false, Message: "Bad request."})
 		return
 	}
 
-	if _, err := db.FindByKey("username", payload.Username); err == nil {
+	if count, err := database.Database.CountUserByKey("username", payload.Username); err != nil {
+		utils.SendResponse(c, http.StatusBadRequest, &models.ResponsePayload{Success: false, Message: err})
+		return
+	} else if count > 0 {
 		utils.SendResponse(c, http.StatusConflict, &models.ResponsePayload{Success: false, Message: "Username already exist."})
 		return
 	}
 
-	if _, err := db.FindByKey("email", payload.Email); err == nil {
+	if count, err := database.Database.CountUserByKey("email", payload.Email); err != nil {
+		utils.SendResponse(c, http.StatusBadRequest, &models.ResponsePayload{Success: false, Message: err})
+		return
+	} else if count > 0 {
 		utils.SendResponse(c, http.StatusConflict, &models.ResponsePayload{Success: false, Message: "Email already exist."})
 		return
 	}
 
 	var person models.User
-	person.ID = bson.NewObjectId()
 	person.Username = payload.Username
 	person.Email = payload.Email
 	person.AuthMethod = models.LOCAL
@@ -87,24 +89,24 @@ func RegisterController(c *gin.Context) {
 		utils.SendResponse(c, http.StatusServiceUnavailable, &models.ResponsePayload{Success: false, Message: "Hash password unavailable."})
 		return
 	}
-	person.Password = hash
+	person.Password = string(hash)
 
-	if err := db.Insert(person); err != nil {
-		utils.SendResponse(c, http.StatusServiceUnavailable, &models.ResponsePayload{Success: false, Message: "Database unavailable."})
+	if err := person.Save(database.Database.DB); err != nil {
+		utils.SendResponse(c, http.StatusServiceUnavailable, &models.ResponsePayload{Success: false, Message: err})
 		return
 	}
 
-	if token, err := utils.CreateToken(person, time.Now().Add(time.Hour*configs.Config.AccessTokenValidityTime).Unix()); err != nil {
+	if token, err := utils.CreateToken(&person, time.Now().Add(time.Hour*configs.Config.AccessTokenValidityTime).Unix()); err != nil {
 		utils.SendResponse(c, http.StatusBadRequest, &models.ResponsePayload{Success: false, Message: "Bad request."})
 	} else {
 		if pwd, err := os.Getwd(); err != nil {
 			panic(err)
 		} else {
-			utils.SendMail(person, models.Template{
+			utils.SendMail(&person, models.Template{
 				Email:        person.Email,
 				Username:     person.Username,
 				ConfirmEmail: configs.Config.MailConfirmationLink + "?token=" + token,
-			}, pwd+"/templates/welcome.html")
+			}, pwd+"/src/templates/welcome.html")
 		}
 		utils.SendRegisterResponse(c, http.StatusCreated, &models.RegisterResponsePayload{Success: true, Message: "Account created.", Token: token, User: person})
 	}
@@ -113,12 +115,22 @@ func RegisterController(c *gin.Context) {
 // RecoveryController is a function that handle the recovery password route
 func RecoveryController(c *gin.Context) {
 	payload := models.RecoveryPayload{}
-	db := mongodb.Database
+
 	if err := c.ShouldBindBodyWith(&payload, binding.JSON); err == nil {
-		if user, err := db.FindByKey("email", payload.Email); err == nil {
+		if user, err := database.Database.FindUserByKey("email", payload.Email); err == nil {
 			if res, err := password.Generate(7, 2, 2, false, false); err != nil {
 				utils.SendResponse(c, http.StatusInternalServerError, &models.ResponsePayload{Success: false, Message: "Bad request."})
 			} else {
+				hash, err := bcrypt.GenerateFromPassword([]byte(res), 10)
+				if err != nil {
+					utils.SendResponse(c, http.StatusServiceUnavailable, &models.ResponsePayload{Success: false, Message: "Hash password unavailable."})
+					return
+				}
+				user.Password = string(hash)
+				if err := user.Update(database.Database.DB); err != nil {
+					utils.SendResponse(c, http.StatusInternalServerError, &models.ResponsePayload{Success: false, Message: err.Error()})
+					return
+				}
 				if pwd, err := os.Getwd(); err != nil {
 					panic(err)
 				} else {
@@ -126,7 +138,7 @@ func RecoveryController(c *gin.Context) {
 						Email:    user.Email,
 						Username: user.Username,
 						Password: res,
-					}, pwd+"/templates/recovery.html")
+					}, pwd+"/src/templates/recovery.html")
 				}
 				utils.SendResponse(c, http.StatusOK, &models.ResponsePayload{Success: true, Message: "Recovery email sended."})
 			}
@@ -141,15 +153,15 @@ func RecoveryController(c *gin.Context) {
 // ConfirmAccountController is a function that hundle the confirm account route
 func ConfirmAccountController(c *gin.Context) {
 	token := c.Query("token")
-	db := mongodb.Database
+
 	if claims, err := utils.ExtractClaims(token); err != nil {
 		c.Redirect(http.StatusMovedPermanently, configs.Config.MailFailedRedirect)
 	} else {
-		if user, err := db.FindByID(claims.ID); err != nil {
+		if user, err := database.Database.GetUserByID(claims.ID); err != nil {
 			c.Redirect(http.StatusMovedPermanently, configs.Config.MailFailedRedirect)
 		} else {
 			user.Verified = true
-			if err := db.Update(user); err != nil {
+			if err := user.Update(database.Database.DB); err != nil {
 				c.Redirect(http.StatusMovedPermanently, configs.Config.MailFailedRedirect)
 			} else {
 				c.Redirect(http.StatusMovedPermanently, configs.Config.MailSuccessRedirect)
