@@ -6,13 +6,13 @@ ADD https://github.com/golang/dep/releases/download/v0.4.1/dep-linux-amd64 /usr/
 RUN chmod +x /usr/bin/dep
 
 # Copy the code from the host and compile it
-WORKDIR $GOPATH/src/github.com/lbrulet/APINIT-GO
+WORKDIR $GOPATH/src/github.com/lbrulet/APINIT-GO/src
 
 COPY Gopkg.toml Gopkg.lock ./
 
 ADD run.sh ./
 
-COPY src/database/migrations ./src
+COPY database/migrations ./src
 
 RUN go get -u -d github.com/golang-migrate/migrate/cmd/migrate
 

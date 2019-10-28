@@ -16,11 +16,11 @@ func InitConfig() {
 		panic(err)
 	} else {
 		if os.Getenv("ENVIRONMENT") == "LOCAL" {
-			if err := gonfig.GetConf(pwd+"/src/configs/local/config.json", &Config); err != nil {
+			if err := gonfig.GetConf(pwd+"/configs/local/config.json", &Config); err != nil {
 				panic(err)
 			}
 		} else {
-			if err := gonfig.GetConf(pwd+"/src/configs/dev/config.json", &Config); err != nil {
+			if err := gonfig.GetConf(pwd+"/configs/dev/config.json", &Config); err != nil {
 				panic(err)
 			}
 		}
