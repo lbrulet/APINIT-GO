@@ -2,11 +2,7 @@
   
 # APINIT-GO
 
-APINIT-GO is a setup of an apiREST using Golang with a mongo database and Docker with an authentification service using JWT.
-
-* __TODO__:
-    - CRUD User
-    - Unit Testing with moq & testify
+APINIT-GO is a setup of an apiREST using Golang with a mysql database and Docker exposed with NGINX with an authentification service using JWT.
 
 ## Installation
 
@@ -23,9 +19,16 @@ sudo chmod +x /usr/local/bin/docker-compose
 
 ## Usage
 
-To start the container
+The start and stop script will required your root password to shutdown your local mysql that use the port 3306.
+
+To start the app
 ```bash
-sudo docker-compose up --build
+cd docker && ./build && ./start
+```
+
+To stop the app
+```bash
+cd docker && ./stop
 ```
 
 ## CHOOSE YOUR ENVIRONNMENT !
@@ -43,7 +46,7 @@ Don't forget to write your smtp detail into the /configs/local/config.json or /c
 And please export your mail account with password like below :
 
 ```bash
-export MAIL_ADDRESS=luc.brulet@epitech.eu
+export MAIL_ADDRESS=luc.brulet@gmail.com
 export MAIL_PASSWORD=azertyuiop
 ```
 
