@@ -54,8 +54,9 @@ NOTE: The default config is the google's smtp address
 
 ## AUTHENTIFICATION
 
-[Postman collection](src/docs/APINIT-GO.postman_collection.json)
-[Postman environment](src/docs/APINIT-GO.postman_environment.json)
+[Postman collection](https://github.com/lbrulet/APINIT-GO/blob/master/docs/APINIT-GO.postman_collection.json)
+
+[Postman environment](https://github.com/lbrulet/APINIT-GO/blob/master/docs/APINIT-GO.postman_environment.json)
 
 * __POST__: 127.0.0.1:8080/api/auth/login
 
