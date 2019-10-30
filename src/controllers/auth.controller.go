@@ -106,7 +106,7 @@ func RegisterController(c *gin.Context) {
 				Email:        person.Email,
 				Username:     person.Username,
 				ConfirmEmail: configs.Config.MailConfirmationLink + "?token=" + token,
-			}, pwd+"/src/templates/welcome.html")
+			}, pwd+"/templates/welcome.html")
 		}
 		utils.SendRegisterResponse(c, http.StatusCreated, &models.RegisterResponsePayload{Success: true, Message: "Account created.", Token: token, User: person})
 	}
@@ -138,7 +138,7 @@ func RecoveryController(c *gin.Context) {
 						Email:    user.Email,
 						Username: user.Username,
 						Password: res,
-					}, pwd+"/src/templates/recovery.html")
+					}, pwd+"/templates/recovery.html")
 				}
 				utils.SendResponse(c, http.StatusOK, &models.ResponsePayload{Success: true, Message: "Recovery email sended."})
 			}
