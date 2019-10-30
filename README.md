@@ -54,6 +54,8 @@ NOTE: The default config is the google's smtp address
 
 ## AUTHENTIFICATION
 
+Download those two files and import them into your postman.
+
 [Postman collection](https://github.com/lbrulet/APINIT-GO/blob/master/docs/APINIT-GO.postman_collection.json)
 
 [Postman environment](https://github.com/lbrulet/APINIT-GO/blob/master/docs/APINIT-GO.postman_environment.json)
