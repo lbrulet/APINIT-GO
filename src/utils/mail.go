@@ -41,7 +41,7 @@ func SendMail(user *models.User, formMail interface{}, pathTotemplate string) {
 					fmt.Printf("[WARNING] %s\n", err.Error())
 				}
 			} else {
-				fmt.Printf("[WARNING] You didn't load your credentials into the environnement!\n")
+				fmt.Printf("[WARNING] You didn't load your credentials into the environnement!\n\texport MAIL_ADDRESS=your_email\n\texport MAIL_PASSWORD=your_password\n")
 			}
 		}()
 	}
