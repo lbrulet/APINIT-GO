@@ -11,10 +11,6 @@ import (
 	"github.com/lbrulet/APINIT-GO/src/utils"
 )
 
-type testHeader struct {
-	Token string `header:"Authorization"`
-}
-
 // IsAuthorized is a middleware that check if the token is valid
 // id := c.MustGet("id").(string) to get the setting value by gin-gonic
 func IsAuthorized(c *gin.Context) {
@@ -68,7 +64,7 @@ func IsAdmin(c *gin.Context) {
 			utils.SendResponse(c, http.StatusUnauthorized, &models.ResponsePayload{Success: false, Message: "Admin reserved action"})
 			return
 		}
-		if user, err := database.Database.GetUserByID(claims.ID); err == nil && user.Admin == true {
+		if user, err := database.Database.GetUserByID(claims.ID); err == nil && user.Admin {
 			c.Set("id", claims.ID)
 			c.Next()
 		} else {

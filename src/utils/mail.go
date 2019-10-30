@@ -18,7 +18,11 @@ func SendMail(user *models.User, formMail interface{}, pathTotemplate string) {
 		fmt.Printf("[WARNING] %s!\n", err)
 	} else {
 		var tpl bytes.Buffer
-		tmpl.Execute(&tpl, formMail)
+		err := tmpl.Execute(&tpl, formMail)
+		if err != nil {
+			fmt.Printf("[WARNING] %s\n", err.Error())
+			return
+		}
 		e := email.NewEmail()
 		e.From = configs.Config.MailFrom
 		e.To = []string{user.Email}
@@ -28,11 +32,14 @@ func SendMail(user *models.User, formMail interface{}, pathTotemplate string) {
 		case models.TemplateRecovery:
 			e.Subject = configs.Config.MailSubjectRecoveryAccount
 		}
-		e.HTML = []byte(tpl.String())
+		e.HTML = tpl.Bytes()
 		go func() {
 			if len(configs.Config.MailAddress) != 0 && len(configs.Config.MailPassword) != 0 {
-				e.Send(configs.Config.SMTPAddress+":"+configs.Config.SMTPPort, smtp.PlainAuth("", configs.Config.MailAddress,
+				err := e.Send(configs.Config.SMTPAddress+":"+configs.Config.SMTPPort, smtp.PlainAuth("", configs.Config.MailAddress,
 					configs.Config.MailPassword, configs.Config.SMTPAddress))
+				if err != nil {
+					fmt.Printf("[WARNING] %s\n", err.Error())
+				}
 			} else {
 				fmt.Printf("[WARNING] You didn't load your credentials into the environnement!\n")
 			}

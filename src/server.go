@@ -11,10 +11,14 @@ import (
 func main() {
 	configs.InitConfig()
 	err := database.InitDB()
+
 	if err != nil {
 		fmt.Println(err)
-	} else {
-		srv := routes.InitRouter()
-		srv.Run(configs.Config.Port)
+		return
+	}
+
+	srv := routes.InitRouter()
+	if err := srv.Run(configs.Config.Port); err != nil {
+		fmt.Println(err)
 	}
 }

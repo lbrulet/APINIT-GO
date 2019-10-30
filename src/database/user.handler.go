@@ -18,13 +18,11 @@ func (db *databaseManager) CountUserByKey(key, data string) (int, error) {
 func (db *databaseManager) FindUserByKey(key, data string) (*models.User, error) {
 	var err error
 
-	// sql query
 	var sqlstr = `SELECT ` +
 		`id, username, email, admin, verified, auth_method, password ` +
 		`FROM apinit_go.users ` +
 		`WHERE ` + key + ` = ?`
 
-	// run query
 	u := models.User{}
 
 	err = db.DB.QueryRow(sqlstr, data).Scan(&u.ID, &u.Username, &u.Email, &u.Admin, &u.Verified, &u.AuthMethod, &u.Password)
@@ -59,13 +57,11 @@ func (db *databaseManager) GetAllUsers() ([]*models.User, error) {
 func (db *databaseManager) GetUserByID(id int) (*models.User, error) {
 	var err error
 
-	// sql query
 	const sqlstr = `SELECT ` +
 		`id, username, email, admin, verified, auth_method, password ` +
 		`FROM apinit_go.users ` +
 		`WHERE id = ?`
 
-	// run query
 	u := models.User{}
 
 	err = db.DB.QueryRow(sqlstr, id).Scan(&u.ID, &u.Username, &u.Email, &u.Admin, &u.Verified, &u.AuthMethod, &u.Password)

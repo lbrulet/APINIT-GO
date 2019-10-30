@@ -19,13 +19,13 @@ const (
 
 // User is a struct about a user
 type User struct {
-	ID         int        `json:"id" bson:"_id"`
-	Username   string     `json:"username" bson:"username" binding:"required"`
-	Email      string     `json:"email" bson:"email" binding:"required"`
-	Password   string     `json:"-" bson:"password" minLen:"8"`
-	Admin      bool       `json:"admin" bson:"admin"`
-	Verified   bool       `json:"verified" bson:"verified"`
-	AuthMethod AuthMethod `json:"-" bson:"auth_method" binding:"required"`
+	ID         int        `json:"id"`
+	Username   string     `json:"username" binding:"required"`
+	Email      string     `json:"email" binding:"required"`
+	Password   string     `json:"-"`
+	Admin      bool       `json:"admin"`
+	Verified   bool       `json:"verified"`
+	AuthMethod AuthMethod `json:"-" binding:"required"`
 	_exists    bool
 	_deleted   bool
 }
